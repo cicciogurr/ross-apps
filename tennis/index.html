@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<script>
+// Banner "Apri nel browser" — visibile solo nel viewer Telegram/WebView
+(function(){
+  var banner = document.createElement('div');
+  banner.id = 'open-banner';
+  banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#a8d08d;color:#0a1628;text-align:center;padding:12px 16px;font-family:system-ui,sans-serif;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:12px;box-shadow:0 2px 12px rgba(0,0,0,0.4)';
+  banner.innerHTML = '🎾 Per la migliore esperienza: <b>scarica il file → aprilo in Chrome o Safari</b> &nbsp;|&nbsp; <button onclick="document.getElementById(\'open-banner\').remove()" style="background:rgba(0,0,0,0.15);border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-weight:700;color:#0a1628">✕ Chiudi</button>';
+  document.addEventListener('DOMContentLoaded', function(){ document.body.insertBefore(banner, document.body.firstChild); document.body.style.paddingTop='52px'; });
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎾 Tennis Live — ATP • WTA • Rankings • Calendar</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0a1628;--bg2:#0f1f3d;--bg3:#152540;--card:#1a2d4e;--card2:#1e3357;
+    --green:#a8d08d;--yellow:#f0d060;--red:#ff5c5c;--blue:#5aacff;
+    --silver:#c0c8d8;--gold:#f0d060;--bronze:#cd7f32;
+    --text:#e0e8f5;--muted:#7a8faa;
+    --clay:#c4703a;--grass:#4caf78;--hard:#3a7ec4;
+    --radius:10px;--transition:0.25s ease;
+  }
+  body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;min-height:100vh;line-height:1.5}
+
+  /* HEADER */
+  header{background:linear-gradient(135deg,#0a1628 0%,#0d2040 40%,#112a50 100%);border-bottom:1px solid #1e3a6a;padding:18px 20px 14px;text-align:center;position:sticky;top:0;z-index:100;backdrop-filter:blur(8px)}
+  .header-logo{font-size:1.9rem;font-weight:800;letter-spacing:-0.5px;color:#fff}
+  .header-logo span{color:var(--green)}
+  .header-sub{font-size:.8rem;color:var(--muted);margin-top:2px;letter-spacing:.5px}
+  .header-badge{display:inline-block;margin-top:7px;background:#1a3060;border:1px solid #2a4a80;border-radius:20px;padding:3px 12px;font-size:.72rem;color:var(--muted)}
+  .header-badge b{color:var(--green)}
+
+  /* TABS */
+  .tabs{display:flex;justify-content:center;gap:6px;padding:14px 16px 0;background:var(--bg);border-bottom:1px solid #1a3060;position:sticky;top:72px;z-index:99}
+  .tab{padding:9px 18px;border-radius:8px 8px 0 0;border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer;font-size:.9rem;font-weight:600;transition:var(--transition);white-space:nowrap}
+  .tab:hover{background:var(--bg3);color:var(--text)}
+  .tab.active{background:var(--card);border-color:#1e3a6a;border-bottom-color:var(--card);color:var(--green);transform:translateY(1px)}
+
+  /* TAB CONTENT */
+  .tab-content{display:none;padding:18px 16px;max-width:960px;margin:0 auto;animation:fadeIn .2s ease}
+  .tab-content.active{display:block}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+  /* SWITCHER */
+  .switcher{display:flex;gap:6px;margin-bottom:16px;background:var(--bg2);border-radius:8px;padding:4px;width:fit-content}
+  .sw-btn{padding:6px 20px;border-radius:6px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:.88rem;font-weight:700;transition:var(--transition)}
+  .sw-btn.active{background:var(--green);color:#0a1628}
+
+  /* SECTION */
+  .section-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin:18px 0 8px;padding-bottom:4px;border-bottom:1px solid #1a3060}
+
+  /* TOURNAMENT CARD */
+  .tourn-card{background:var(--card);border:1px solid #1e3a6a;border-radius:var(--radius);margin-bottom:14px;overflow:hidden}
+  .tourn-header{padding:12px 16px;background:var(--card2);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .tourn-name{font-weight:700;font-size:1rem;color:#fff;flex:1;min-width:160px}
+  .tourn-meta{font-size:.78rem;color:var(--muted);flex:2;min-width:200px}
+  .tourn-meta b{color:var(--text)}
+  .badge{display:inline-block;border-radius:4px;padding:2px 8px;font-size:.7rem;font-weight:700;margin-right:4px}
+  .badge-live{background:#ff1a1a22;border:1px solid #ff1a1a55;color:#ff6b6b;animation:pulse 1.5s infinite}
+  .badge-m1000{background:#f0d06022;border:1px solid #f0d06055;color:var(--yellow)}
+  .badge-gs{background:#5aacff22;border:1px solid #5aacff55;color:var(--blue)}
+  .badge-500{background:#a8d08d22;border:1px solid #a8d08d55;color:var(--green)}
+  .badge-250{background:#c4703a22;border:1px solid #c4703a55;color:#d4835a}
+  .badge-1000w{background:#cc77cc22;border:1px solid #cc77cc55;color:#dd99dd}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+
+  /* MATCH LIST */
+  .match-list{padding:6px 8px 8px}
+  .round-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);padding:8px 8px 4px;border-top:1px solid #1a3060;margin-top:4px}
+  .round-label:first-child{border-top:none;margin-top:0}
+  .match-row{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:6px;transition:background .15s}
+  .match-row:hover{background:#ffffff08}
+  .match-players{flex:1;min-width:0}
+  .player{font-size:.88rem;padding:1px 0}
+  .player.winner{font-weight:700;color:#fff}
+  .player.loser{color:var(--muted)}
+  .vs{font-size:.72rem;color:var(--muted);padding:0 4px}
+  .match-score{font-size:.83rem;font-family:monospace;color:var(--green);white-space:nowrap;min-width:90px;text-align:right}
+  .match-score.live{color:var(--red)}
+
+  /* RANKING TABLE */
+  .ranking-table{width:100%;border-collapse:collapse;font-size:.88rem}
+  .ranking-table th{text-align:left;padding:8px 10px;background:var(--card2);color:var(--muted);font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;position:sticky;top:130px}
+  .ranking-table td{padding:8px 10px;border-bottom:1px solid #1a3060}
+  .ranking-table tr:hover td{background:#ffffff06}
+  .ranking-table tr.gold td{background:#f0d06010;border-left:2px solid var(--gold)}
+  .ranking-table tr.silver td{background:#c0c8d808;border-left:2px solid var(--silver)}
+  .ranking-table tr.bronze td{background:#cd7f3210;border-left:2px solid var(--bronze)}
+  .pos{font-weight:800;font-size:1rem;min-width:30px;text-align:center}
+  .pos.gold{color:var(--gold)}
+  .pos.silver{color:var(--silver)}
+  .pos.bronze{color:var(--bronze)}
+  .move{font-size:.8rem;min-width:22px;text-align:center}
+  .move.up{color:#4caf78}
+  .move.dn{color:#ff5c5c}
+  .move.eq{color:var(--muted)}
+  .player-name{font-weight:600}
+  .flag{margin-right:4px}
+  .pts{font-weight:700;color:var(--yellow);text-align:right}
+  .nat{color:var(--muted);font-size:.82rem}
+
+  /* CALENDAR */
+  .month-title{font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--blue);margin:20px 0 10px;padding:6px 0 6px;border-bottom:2px solid var(--blue)}
+  .cal-card{background:var(--card);border:1px solid #1e3a6a;border-radius:var(--radius);margin-bottom:10px;padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;transition:transform .15s}
+  .cal-card:hover{transform:translateX(3px);border-color:#2a5090}
+  .cal-card.next{border-color:var(--yellow);background:linear-gradient(90deg,#f0d06008,var(--card))}
+  .cal-main{flex:1;min-width:180px}
+  .cal-name{font-weight:700;font-size:.97rem;color:#fff}
+  .cal-loc{font-size:.8rem;color:var(--muted);margin-top:2px}
+  .cal-dates{font-size:.8rem;color:var(--blue);font-weight:600}
+  .cal-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+  .surf-badge{display:inline-block;border-radius:4px;padding:3px 9px;font-size:.72rem;font-weight:700}
+  .surf-clay{background:#c4703a33;color:#d4835a;border:1px solid #c4703a55}
+  .surf-grass{background:#4caf7833;color:#6dc890;border:1px solid #4caf7855}
+  .surf-hard{background:#3a7ec433;color:#5aa8d4;border:1px solid #3a7ec455}
+  .surf-indoor{background:#8866cc33;color:#aa88ee;border:1px solid #8866cc55}
+  .badge-next{background:var(--yellow);color:#0a1628;border-radius:4px;padding:2px 8px;font-size:.7rem;font-weight:800}
+  .badge-gs-cal{background:var(--blue);color:#0a1628;border-radius:4px;padding:2px 8px;font-size:.7rem;font-weight:800}
+  .prize{font-size:.75rem;color:var(--muted)}
+
+  /* FOOTER */
+  footer{background:var(--bg2);border-top:1px solid #1a3060;padding:16px;text-align:center;color:var(--muted);font-size:.75rem;margin-top:30px}
+  footer b{color:var(--text)}
+
+  /* RESPONSIVE */
+  @media(max-width:600px){
+    .tourn-header{flex-direction:column;gap:4px}
+    .ranking-table th:nth-child(4),.ranking-table td:nth-child(4){display:none}
+    .match-score{min-width:70px;font-size:.78rem}
+    .cal-card{flex-direction:column;align-items:flex-start}
+    .cal-right{align-items:flex-start}
+    .tabs{gap:2px}
+    .tab{padding:8px 12px;font-size:.82rem}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-logo">🎾 Tennis <span>Live</span></div>
+  <div class="header-sub">ATP • WTA • Rankings • Calendar</div>
+  <div class="header-badge">Aggiornato al <b>13 maggio 2026</b> | Fonti: ATP Tour, WTA Tour</div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('results',this)">🎾 Risultati</div>
+  <div class="tab" onclick="switchTab('ranking',this)">📊 Ranking</div>
+  <div class="tab" onclick="switchTab('calendar',this)">📅 Calendario</div>
+</div>
+
+<!-- ═══════════════════ TAB 1: RISULTATI ═══════════════════ -->
+<div id="tab-results" class="tab-content active">
+  <div class="switcher">
+    <button class="sw-btn active" onclick="switchTour('results','atp',this)">ATP</button>
+    <button class="sw-btn" onclick="switchTour('results','wta',this)">WTA</button>
+  </div>
+
+  <!-- ATP RESULTS -->
+  <div id="results-atp">
+
+    <!-- ROME ATP (in corso) -->
+    <div class="tourn-card">
+      <div class="tourn-header">
+        <div class="tourn-name">🇮🇹 Internazionali BNL d'Italia
+          <span class="badge badge-live">🔴 IN CORSO</span>
+          <span class="badge badge-m1000">Masters 1000</span>
+        </div>
+        <div class="tourn-meta"><b>Roma, Italia</b> &nbsp;|&nbsp; <b>Terra rossa</b> &nbsp;|&nbsp; 6–17 mag 2026 &nbsp;|&nbsp; Montepremi: €6.5M</div>
+      </div>
+      <div class="match-list">
+        <div class="round-label">Quarti di Finale</div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇮🇹 J. Sinner</div><div class="vs">vs</div><div class="player">🇷🇺 D. Medvedev</div></div><div class="match-score live">Da giocare</div></div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇨🇦 F. Auger-Aliassime</div><div class="vs">vs</div><div class="player">🇮🇹 L. Darderi</div></div><div class="match-score live">Da giocare</div></div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇳🇴 C. Ruud</div><div class="vs">vs</div><div class="player">🇷🇺 A. Rublev</div></div><div class="match-score live">Da giocare</div></div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇷🇺 K. Khachanov</div><div class="vs">vs</div><div class="player">🇪🇸 R. Jódar</div></div><div class="match-score live">Da giocare</div></div>
+        <div class="round-label">Round of 16 — Completati</div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇮🇹 J. Sinner [1]</div><div class="vs">def.</div><div class="player loser">🇮🇹 A. Pellegrino</div></div><div class="match-score">6-2, 6-3</div></div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇷🇺 D. Medvedev [9]</div><div class="vs">def.</div><div class="player loser">🇦🇷 T.A. Tirante</div></div><div class="match-score">6-3, 6-2</div></div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇮🇹 L. Darderi [20]</div><div class="vs">def.</div><div class="player loser">🇩🇪 A. Zverev [2]</div></div><div class="match-score">1-6, 7-6, 6-0</div></div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇳🇴 C. Ruud</div><div class="vs">def.</div><div class="player loser">🇮🇹 L. Musetti [10]</div></div><div class="match-score">6-3, 6-1</div></div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇷🇺 A. Rublev [14]</div><div class="vs">def.</div><div class="player loser">🇬🇪 N. Basilashvili</div></div><div class="match-score">3-6, 7-6, 6-2</div></div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇷🇺 K. Khachanov [15]</div><div class="vs">def.</div><div class="player loser">🇭🇷 D. Prizmic</div></div><div class="match-score">6-1, 7-6</div></div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇪🇸 R. Jódar [34]</div><div class="vs">def.</div><div class="player loser">🇺🇸 L. Tien</div></div><div class="match-score">6-1, 6-4</div></div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇪🇸 M. Landaluce</div><div class="vs">def.</div><div class="player loser">🇷🇸 H. Medjedovic</div></div><div class="match-score">7-5, 6-4</div></div>
+      </div>
+    </div>
+
+    <!-- MADRID ATP (completato) -->
+    <div class="tourn-card">
+      <div class="tourn-header">
+        <div class="tourn-name">🇪🇸 Mutua Madrid Open
+          <span class="badge badge-m1000">Masters 1000</span>
+        </div>
+        <div class="tourn-meta"><b>Madrid, Spagna</b> &nbsp;|&nbsp; <b>Terra rossa</b> &nbsp;|&nbsp; 26 apr – 4 mag 2026 &nbsp;|&nbsp; 🏆 <b>Sinner</b></div>
+      </div>
+      <div class="match-list">
+        <div class="round-label">Finale</div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇮🇹 J. Sinner [1]</div><div class="vs">def.</div><div class="player loser">🇩🇪 A. Zverev [2]</div></div><div class="match-score">6-1, 6-2</div></div>
+        <div class="round-label">Semifinali</div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇮🇹 J. Sinner [1]</div><div class="vs">def.</div><div class="player loser">🇫🇷 A. Fils [17]</div></div><div class="match-score">6-2, 6-4</div></div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇩🇪 A. Zverev [2]</div><div class="vs">def.</div><div class="player loser">🇧🇪 A. Blockx</div></div><div class="match-score">6-2, 7-5</div></div>
+        <div class="round-label">Quarti di Finale</div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇩🇪 A. Zverev [2]</div><div class="vs">def.</div><div class="player loser">🇮🇹 F. Cobolli [12]</div></div><div class="match-score">6-1, 6-4</div></div>
+      </div>
+    </div>
+
+    <!-- HAMBURG (prossimo) -->
+    <div class="tourn-card">
+      <div class="tourn-header">
+        <div class="tourn-name">🇩🇪 Bitpanda Hamburg Open
+          <span class="badge badge-500">ATP 500</span>
+        </div>
+        <div class="tourn-meta"><b>Amburgo, Germania</b> &nbsp;|&nbsp; <b>Terra rossa</b> &nbsp;|&nbsp; 17–23 mag 2026</div>
+      </div>
+      <div class="match-list">
+        <div class="round-label" style="color:var(--blue)">⏳ Torneo in programma — draw non ancora pubblicato</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WTA RESULTS -->
+  <div id="results-wta" style="display:none">
+
+    <!-- ROME WTA (in corso) -->
+    <div class="tourn-card">
+      <div class="tourn-header">
+        <div class="tourn-name">🇮🇹 Internazionali BNL d'Italia
+          <span class="badge badge-live">🔴 IN CORSO</span>
+          <span class="badge badge-1000w">WTA 1000</span>
+        </div>
+        <div class="tourn-meta"><b>Roma, Italia</b> &nbsp;|&nbsp; <b>Terra rossa</b> &nbsp;|&nbsp; 5–16 mag 2026 &nbsp;|&nbsp; Montepremi: €2.9M</div>
+      </div>
+      <div class="match-list">
+        <div class="round-label">Semifinali</div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇵🇱 I. Świątek [3]</div><div class="vs">def.</div><div class="player loser">🇺🇸 C. Gauff [4]</div></div><div class="match-score">6-4, 6-3</div></div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇰🇿 E. Rybakina [2]</div><div class="vs">vs</div><div class="player">🇺🇦 E. Svitolina</div></div><div class="match-score live">Da giocare</div></div>
+        <div class="round-label">Quarti di Finale — Completati</div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇺🇸 C. Gauff [4]</div><div class="vs">def.</div><div class="player loser">🇷🇺 M. Andreeva [7]</div></div><div class="match-score">4-6, 6-2, 6-4</div></div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇷🇴 S. Cîrstea</div><div class="vs">def.</div><div class="player loser">🇱🇻 J. Ostapenko</div></div><div class="match-score">6-1, 7-6</div></div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇺🇸 J. Pegula [5]</div><div class="vs">vs</div><div class="player">🇵🇱 I. Świątek [3]</div></div><div class="match-score">Da giocare</div></div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇺🇦 E. Svitolina</div><div class="vs">vs</div><div class="player">🇰🇿 E. Rybakina [2]</div></div><div class="match-score">Da giocare</div></div>
+        <div class="round-label">Round of 16 — Completati</div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇷🇴 S. Cîrstea</div><div class="vs">def.</div><div class="player loser">🇨🇿 L. Nošková [13]</div></div><div class="match-score">6-2, 6-4</div></div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇱🇻 J. Ostapenko</div><div class="vs">def.</div><div class="player loser">🇷🇺 A. Kalinskaya</div></div><div class="match-score">6-1, 6-2</div></div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇷🇺 M. Andreeva [7]</div><div class="vs">def.</div><div class="player loser">🇧🇪 E. Mertens</div></div><div class="match-score">6-3, 6-3</div></div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇺🇸 J. Pegula [5]</div><div class="vs">def.</div><div class="player loser">🇷🇺 A. Potapova</div></div><div class="match-score">7-6, 6-2</div></div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇵🇱 I. Świątek [3]</div><div class="vs">def.</div><div class="player loser">🇯🇵 N. Osaka [16]</div></div><div class="match-score">6-2, 6-1</div></div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇺🇸 C. Gauff [4]</div><div class="vs">def.</div><div class="player loser">🇺🇸 I. Jovic [17]</div></div><div class="match-score">5-7, 7-5, 6-2</div></div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇧🇾 A. Sabalenka [1]</div><div class="vs">def.</div><div class="player loser">🇺🇸 C. Gauff [4]</div></div><div class="match-score">Da ricercare</div></div>
+      </div>
+    </div>
+
+    <!-- MADRID WTA completato -->
+    <div class="tourn-card">
+      <div class="tourn-header">
+        <div class="tourn-name">🇪🇸 Mutua Madrid Open
+          <span class="badge badge-1000w">WTA 1000</span>
+        </div>
+        <div class="tourn-meta"><b>Madrid, Spagna</b> &nbsp;|&nbsp; <b>Terra rossa</b> &nbsp;|&nbsp; 25 apr – 3 mag 2026 &nbsp;|&nbsp; 🏆 <b>M. Kostyuk</b></div>
+      </div>
+      <div class="match-list">
+        <div class="round-label">Finale</div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇺🇦 M. Kostyuk [15]</div><div class="vs">def.</div><div class="player loser">🇷🇺 M. Andreeva [7]</div></div><div class="match-score">6-3, 7-5</div></div>
+        <div class="round-label">Terzo Turno</div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇺🇸 H. Baptiste [25]</div><div class="vs">def.</div><div class="player loser">🇧🇾 A. Sabalenka [1]</div></div><div class="match-score">2-6, 7-6, 7-5</div></div>
+        <div class="round-label">Terzo Turno (Roma)</div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇷🇴 S. Cîrstea</div><div class="vs">def.</div><div class="player loser">🇧🇾 A. Sabalenka [1]</div></div><div class="match-score">7-5, 6-4</div></div>
+      </div>
+    </div>
+
+    <!-- PARMA WTA 125 -->
+    <div class="tourn-card">
+      <div class="tourn-header">
+        <div class="tourn-name">🇮🇹 Parma Ladies Open
+          <span class="badge badge-live">🔴 IN CORSO</span>
+          <span class="badge badge-250">WTA 125</span>
+        </div>
+        <div class="tourn-meta"><b>Parma, Italia</b> &nbsp;|&nbsp; <b>Terra rossa</b> &nbsp;|&nbsp; 11–16 mag 2026 &nbsp;|&nbsp; $115,000</div>
+      </div>
+      <div class="match-list">
+        <div class="round-label">Round of 32</div>
+        <div class="match-row"><div class="match-players"><div class="player winner">🇺🇦 D. Yastremska [3]</div><div class="vs">def.</div><div class="player loser">🇮🇹 V. Bosio</div></div><div class="match-score">7-6(3), 6-3</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ TAB 2: RANKING ═══════════════════ -->
+<div id="tab-ranking" class="tab-content">
+  <div class="switcher">
+    <button class="sw-btn active" onclick="switchTour('ranking','atp',this)">ATP</button>
+    <button class="sw-btn" onclick="switchTour('ranking','wta',this)">WTA</button>
+  </div>
+
+  <!-- ATP RANKING -->
+  <div id="ranking-atp">
+    <div class="section-title">📊 ATP Singles — Top 20 · al 12 maggio 2026</div>
+    <div style="overflow-x:auto">
+    <table class="ranking-table">
+      <thead><tr><th>#</th><th>±</th><th>Giocatore</th><th>Nazione</th><th>Punti</th></tr></thead>
+      <tbody>
+        <tr class="gold"><td class="pos gold">1</td><td class="move eq">—</td><td class="player-name">Jannik Sinner</td><td class="nat">🇮🇹 Italia</td><td class="pts">14,350</td></tr>
+        <tr class="silver"><td class="pos silver">2</td><td class="move eq">—</td><td class="player-name">Carlos Alcaraz</td><td class="nat">🇪🇸 Spagna</td><td class="pts">12,960</td></tr>
+        <tr class="bronze"><td class="pos bronze">3</td><td class="move eq">—</td><td class="player-name">Alexander Zverev</td><td class="nat">🇩🇪 Germania</td><td class="pts">5,805</td></tr>
+        <tr><td class="pos">4</td><td class="move eq">—</td><td class="player-name">Novak Djokovic</td><td class="nat">🇷🇸 Serbia</td><td class="pts">4,700</td></tr>
+        <tr><td class="pos">5</td><td class="move up">↑</td><td class="player-name">Felix Auger-Aliassime</td><td class="nat">🇨🇦 Canada</td><td class="pts">4,050</td></tr>
+        <tr><td class="pos">6</td><td class="move up">↑</td><td class="player-name">Ben Shelton</td><td class="nat">🇺🇸 USA</td><td class="pts">4,030</td></tr>
+        <tr><td class="pos">7</td><td class="move eq">—</td><td class="player-name">Taylor Fritz</td><td class="nat">🇺🇸 USA</td><td class="pts">3,770</td></tr>
+        <tr><td class="pos">8</td><td class="move eq">—</td><td class="player-name">Alex de Minaur</td><td class="nat">🇦🇺 Australia</td><td class="pts">3,755</td></tr>
+        <tr><td class="pos">9</td><td class="move dn">↓</td><td class="player-name">Daniil Medvedev</td><td class="nat">🇷🇺 Russia</td><td class="pts">3,460</td></tr>
+        <tr><td class="pos">10</td><td class="move up">↑</td><td class="player-name">Lorenzo Musetti</td><td class="nat">🇮🇹 Italia</td><td class="pts">3,415</td></tr>
+        <tr><td class="pos">11</td><td class="move up">↑</td><td class="player-name">Alexander Bublik</td><td class="nat">🇰🇿 Kazakistan</td><td class="pts">3,355</td></tr>
+        <tr><td class="pos">12</td><td class="move up">↑</td><td class="player-name">Flavio Cobolli</td><td class="nat">🇮🇹 Italia</td><td class="pts">2,750</td></tr>
+        <tr><td class="pos">13</td><td class="move eq">—</td><td class="player-name">Jiří Lehečka</td><td class="nat">🇨🇿 Cechia</td><td class="pts">2,715</td></tr>
+        <tr><td class="pos">14</td><td class="move dn">↓</td><td class="player-name">Andrey Rublev</td><td class="nat">🇷🇺 Russia</td><td class="pts">2,590</td></tr>
+        <tr><td class="pos">15</td><td class="move up">↑</td><td class="player-name">Karen Khachanov</td><td class="nat">🇷🇺 Russia</td><td class="pts">2,220</td></tr>
+        <tr><td class="pos">16</td><td class="move up">↑</td><td class="player-name">Valentin Vacherot</td><td class="nat">🇲🇨 Monaco</td><td class="pts">2,147</td></tr>
+        <tr><td class="pos">17</td><td class="move eq">—</td><td class="player-name">Arthur Fils</td><td class="nat">🇫🇷 Francia</td><td class="pts">2,130</td></tr>
+        <tr><td class="pos">18</td><td class="move dn">↓</td><td class="player-name">Tommy Paul</td><td class="nat">🇺🇸 USA</td><td class="pts">1,975</td></tr>
+        <tr><td class="pos">19</td><td class="move eq">—</td><td class="player-name">Cameron Norrie</td><td class="nat">🇬🇧 Gran Bretagna</td><td class="pts">1,918</td></tr>
+        <tr><td class="pos">20</td><td class="move up">↑</td><td class="player-name">Luciano Darderi</td><td class="nat">🇮🇹 Italia</td><td class="pts">1,890</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- WTA RANKING -->
+  <div id="ranking-wta" style="display:none">
+    <div class="section-title">📊 WTA Singles — Top 20 · al 12 maggio 2026</div>
+    <div style="overflow-x:auto">
+    <table class="ranking-table">
+      <thead><tr><th>#</th><th>±</th><th>Giocatrice</th><th>Nazione</th><th>Punti</th></tr></thead>
+      <tbody>
+        <tr class="gold"><td class="pos gold">1</td><td class="move eq">—</td><td class="player-name">Aryna Sabalenka</td><td class="nat">🇧🇾 Bielorussia</td><td class="pts">10,110</td></tr>
+        <tr class="silver"><td class="pos silver">2</td><td class="move eq">—</td><td class="player-name">Elena Rybakina</td><td class="nat">🇰🇿 Kazakistan</td><td class="pts">8,555</td></tr>
+        <tr class="bronze"><td class="pos bronze">3</td><td class="move up">↑</td><td class="player-name">Iga Świątek</td><td class="nat">🇵🇱 Polonia</td><td class="pts">6,948</td></tr>
+        <tr><td class="pos">4</td><td class="move eq">—</td><td class="player-name">Coco Gauff</td><td class="nat">🇺🇸 USA</td><td class="pts">6,749</td></tr>
+        <tr><td class="pos">5</td><td class="move up">↑</td><td class="player-name">Jessica Pegula</td><td class="nat">🇺🇸 USA</td><td class="pts">6,136</td></tr>
+        <tr><td class="pos">6</td><td class="move up">↑</td><td class="player-name">Amanda Anisimova</td><td class="nat">🇺🇸 USA</td><td class="pts">5,985</td></tr>
+        <tr><td class="pos">7</td><td class="move up">↑</td><td class="player-name">Mirra Andreeva</td><td class="nat">🇷🇺 Russia</td><td class="pts">4,181</td></tr>
+        <tr><td class="pos">8</td><td class="move dn">↓</td><td class="player-name">Jasmine Paolini</td><td class="nat">🇮🇹 Italia</td><td class="pts">3,722</td></tr>
+        <tr><td class="pos">9</td><td class="move up">↑</td><td class="player-name">Victoria Mboko</td><td class="nat">🇨🇦 Canada</td><td class="pts">3,531</td></tr>
+        <tr><td class="pos">10</td><td class="move eq">—</td><td class="player-name">Elina Svitolina</td><td class="nat">🇺🇦 Ucraina</td><td class="pts">3,530</td></tr>
+        <tr><td class="pos">11</td><td class="move up">↑</td><td class="player-name">Karolína Muchová</td><td class="nat">🇨🇿 Cechia</td><td class="pts">3,318</td></tr>
+        <tr><td class="pos">12</td><td class="move eq">—</td><td class="player-name">Belinda Bencic</td><td class="nat">🇨🇭 Svizzera</td><td class="pts">3,090</td></tr>
+        <tr><td class="pos">13</td><td class="move eq">—</td><td class="player-name">Linda Nošková</td><td class="nat">🇨🇿 Cechia</td><td class="pts">2,999</td></tr>
+        <tr><td class="pos">14</td><td class="move eq">—</td><td class="player-name">Ekaterina Alexandrova</td><td class="nat">🇷🇺 Russia</td><td class="pts">2,669</td></tr>
+        <tr><td class="pos">15</td><td class="move up">↑</td><td class="player-name">Marta Kostyuk</td><td class="nat">🇺🇦 Ucraina</td><td class="pts">2,507</td></tr>
+        <tr><td class="pos">16</td><td class="move dn">↓</td><td class="player-name">Naomi Osaka</td><td class="nat">🇯🇵 Giappone</td><td class="pts">2,341</td></tr>
+        <tr><td class="pos">17</td><td class="move up">↑</td><td class="player-name">Iva Jovic</td><td class="nat">🇺🇸 USA</td><td class="pts">2,235</td></tr>
+        <tr><td class="pos">18</td><td class="move up">↑</td><td class="player-name">Clara Tauson</td><td class="nat">🇩🇰 Danimarca</td><td class="pts">2,030</td></tr>
+        <tr><td class="pos">19</td><td class="move eq">—</td><td class="player-name">Madison Keys</td><td class="nat">🇺🇸 USA</td><td class="pts">1,946</td></tr>
+        <tr><td class="pos">20</td><td class="move eq">—</td><td class="player-name">Diana Shnaider</td><td class="nat">🇷🇺 Russia</td><td class="pts">1,946</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ TAB 3: CALENDARIO ═══════════════════ -->
+<div id="tab-calendar" class="tab-content">
+  <div class="section-title">📅 Prossimi Tornei ATP &amp; WTA — maggio / giugno 2026</div>
+
+  <div class="month-title">🗓 Maggio 2026</div>
+
+  <div class="cal-card">
+    <div class="cal-main">
+      <div class="cal-name">🇮🇹 Internazionali BNL d'Italia</div>
+      <div class="cal-loc">Roma, Italia</div>
+      <div class="cal-dates">6–17 maggio 2026</div>
+    </div>
+    <div class="cal-right">
+      <span class="badge badge-live">🔴 IN CORSO</span>
+      <span class="surf-badge surf-clay">🟤 Terra</span>
+      <span class="badge badge-m1000">Masters 1000</span>
+      <div class="prize">€ 6.5M (ATP) · € 2.9M (WTA)</div>
+    </div>
+  </div>
+
+  <div class="cal-card next">
+    <div class="cal-main">
+      <div class="cal-name">🇩🇪 Bitpanda Hamburg Open</div>
+      <div class="cal-loc">Amburgo, Germania · Rothenbaum Tennis Center</div>
+      <div class="cal-dates">17–23 maggio 2026</div>
+    </div>
+    <div class="cal-right">
+      <span class="badge-next">PROSSIMO</span>
+      <span class="surf-badge surf-clay">🟤 Terra</span>
+      <span class="badge badge-500">ATP 500</span>
+      <div class="prize">€ 2.4M</div>
+    </div>
+  </div>
+
+  <div class="cal-card next">
+    <div class="cal-main">
+      <div class="cal-name">🇨🇭 Gonet Geneva Open</div>
+      <div class="cal-loc">Ginevra, Svizzera · Tennis Club de Genève</div>
+      <div class="cal-dates">17–23 maggio 2026</div>
+    </div>
+    <div class="cal-right">
+      <span class="badge-next">PROSSIMO</span>
+      <span class="surf-badge surf-clay">🟤 Terra</span>
+      <span class="badge badge-250">ATP 250</span>
+      <div class="prize">€ 718K</div>
+    </div>
+  </div>
+
+  <div class="cal-card">
+    <div class="cal-main">
+      <div class="cal-name">🇮🇹 Parma Ladies Open</div>
+      <div class="cal-loc">Parma, Italia</div>
+      <div class="cal-dates">11–16 maggio 2026</div>
+    </div>
+    <div class="cal-right">
+      <span class="badge badge-live">🔴 IN CORSO</span>
+      <span class="surf-badge surf-clay">🟤 Terra</span>
+      <span class="badge badge-250">WTA 125</span>
+      <div class="prize">$115K</div>
+    </div>
+  </div>
+
+  <div class="month-title">🗓 Giugno 2026</div>
+
+  <div class="cal-card">
+    <div class="cal-main">
+      <div class="cal-name">🇫🇷 Roland Garros — French Open 🏆</div>
+      <div class="cal-loc">Parigi, Francia · Stade Roland Garros</div>
+      <div class="cal-dates">Qualificazioni: 18–22 mag · Main Draw: 24 mag – 7 giu 2026</div>
+    </div>
+    <div class="cal-right">
+      <span class="badge-gs-cal">GRAND SLAM</span>
+      <span class="surf-badge surf-clay">🟤 Terra</span>
+      <span class="badge badge-gs">GS</span>
+      <div class="prize">€ 53.5M totali</div>
+    </div>
+  </div>
+
+  <div class="cal-card">
+    <div class="cal-main">
+      <div class="cal-name">🇬🇧 Cinch Championships (Queen's Club)</div>
+      <div class="cal-loc">Londra, Gran Bretagna · The Queen's Club</div>
+      <div class="cal-dates">8–14 giugno 2026</div>
+    </div>
+    <div class="cal-right">
+      <span class="surf-badge surf-grass">🟢 Erba</span>
+      <span class="badge badge-500">ATP 500</span>
+      <div class="prize">€ 2.3M</div>
+    </div>
+  </div>
+
+  <div class="cal-card">
+    <div class="cal-main">
+      <div class="cal-name">🇩🇪 Terra Wortmann Open Halle</div>
+      <div class="cal-loc">Halle, Germania · OWL Arena</div>
+      <div class="cal-dates">8–14 giugno 2026</div>
+    </div>
+    <div class="cal-right">
+      <span class="surf-badge surf-grass">🟢 Erba</span>
+      <span class="badge badge-500">ATP 500</span>
+      <div class="prize">€ 2.4M</div>
+    </div>
+  </div>
+
+  <div class="cal-card">
+    <div class="cal-main">
+      <div class="cal-name">🇬🇧 Rothesay Classic Birmingham</div>
+      <div class="cal-loc">Birmingham, Gran Bretagna · Edgbaston Priory Club</div>
+      <div class="cal-dates">8–14 giugno 2026</div>
+    </div>
+    <div class="cal-right">
+      <span class="surf-badge surf-grass">🟢 Erba</span>
+      <span class="badge badge-250">WTA 250</span>
+      <div class="prize">$275K</div>
+    </div>
+  </div>
+
+  <div class="cal-card">
+    <div class="cal-main">
+      <div class="cal-name">🇬🇧 Rothesay International Eastbourne</div>
+      <div class="cal-loc">Eastbourne, Gran Bretagna</div>
+      <div class="cal-dates">15–21 giugno 2026</div>
+    </div>
+    <div class="cal-right">
+      <span class="surf-badge surf-grass">🟢 Erba</span>
+      <span class="badge badge-500">WTA 500</span>
+      <div class="prize">$940K</div>
+    </div>
+  </div>
+
+  <div class="cal-card">
+    <div class="cal-main">
+      <div class="cal-name">🇳🇱 Libéma Open 's-Hertogenbosch</div>
+      <div class="cal-loc">Den Bosch, Paesi Bassi</div>
+      <div class="cal-dates">15–21 giugno 2026</div>
+    </div>
+    <div class="cal-right">
+      <span class="surf-badge surf-grass">🟢 Erba</span>
+      <span class="badge badge-250">ATP/WTA 250</span>
+      <div class="prize">€ 500K</div>
+    </div>
+  </div>
+
+  <div class="month-title">🗓 Luglio 2026</div>
+
+  <div class="cal-card">
+    <div class="cal-main">
+      <div class="cal-name">🇬🇧 The Championships Wimbledon 🏆</div>
+      <div class="cal-loc">Londra, Gran Bretagna · All England Club</div>
+      <div class="cal-dates">29 giugno – 12 luglio 2026</div>
+    </div>
+    <div class="cal-right">
+      <span class="badge-gs-cal">GRAND SLAM</span>
+      <span class="surf-badge surf-grass">🟢 Erba</span>
+      <span class="badge badge-gs">GS</span>
+      <div class="prize">£ 50M+ totali</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer>
+  <b>🎾 Tennis Live</b> &nbsp;|&nbsp; Dati aggiornati al <b>13 maggio 2026</b> &nbsp;|&nbsp; Fonti: <b>ATP Tour</b>, <b>WTA Tour</b>, <b>Roland Garros</b>, <b>Las Vegas Sun</b>, <b>TennisUpToDate</b>
+</footer>
+
+<!-- ═══════════════════ JAVASCRIPT ═══════════════════ -->
+<script>
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function switchTour(tabId, tour, btn) {
+  const parent = document.getElementById('tab-' + tabId);
+  parent.querySelectorAll('.sw-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const atpDiv = document.getElementById(tabId + '-atp');
+  const wtaDiv = document.getElementById(tabId + '-wta');
+  if (atpDiv) atpDiv.style.display = tour === 'atp' ? '' : 'none';
+  if (wtaDiv) wtaDiv.style.display = tour === 'wta' ? '' : 'none';
+}
+</script>
+</body>
+</html>
