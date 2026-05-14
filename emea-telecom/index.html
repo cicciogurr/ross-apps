@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EMEA Telecom & Digital Infra</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #1c2128;
+    --cyan: #00d4ff;
+    --green: #00ff88;
+    --purple: #a371f7;
+    --orange: #f78166;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --border: #30363d;
+    --radius: 12px;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; line-height: 1.6; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* HEADER */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(13,17,23,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; font-size: 1.05rem; font-weight: 700; color: var(--cyan); letter-spacing: -0.3px; }
+  .logo-icon { font-size: 1.5rem; }
+  nav { display: flex; gap: 1.5rem; }
+  nav a { color: var(--text2); text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: color .2s; }
+  nav a:hover { color: var(--cyan); }
+  .live-badge { background: #ff4444; color: #fff; font-size: 0.65rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.5px; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
+
+  /* HERO */
+  .hero {
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,212,255,0.08) 0%, transparent 70%);
+    border-bottom: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(0,212,255,0.02) 40px, rgba(0,212,255,0.02) 41px),
+                repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0,212,255,0.02) 40px, rgba(0,212,255,0.02) 41px);
+    pointer-events: none;
+  }
+  .hero-tag { display: inline-block; background: rgba(0,212,255,0.12); color: var(--cyan); border: 1px solid rgba(0,212,255,0.3); border-radius: 20px; padding: 4px 14px; font-size: 0.75rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 1.2rem; }
+  .hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; letter-spacing: -1px; line-height: 1.1; margin-bottom: 1rem; }
+  .hero h1 span { background: linear-gradient(135deg, var(--cyan), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero p { color: var(--text2); font-size: 1.05rem; max-width: 600px; margin: 0 auto 2rem; }
+  .hero-stats { display: flex; justify-content: center; gap: 2.5rem; flex-wrap: wrap; }
+  .hero-stat { text-align: center; }
+  .hero-stat .num { font-size: 1.6rem; font-weight: 800; background: linear-gradient(135deg, var(--cyan), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero-stat .lbl { font-size: 0.72rem; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+  .update-bar { margin-top: 2rem; font-size: 0.78rem; color: var(--text2); }
+  .update-bar strong { color: var(--green); }
+
+  /* SECTIONS */
+  section { padding: 3.5rem 2rem; max-width: 1280px; margin: 0 auto; }
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 2rem; }
+  .section-header h2 { font-size: 1.4rem; font-weight: 700; }
+  .section-tag { background: rgba(0,212,255,0.1); color: var(--cyan); border: 1px solid rgba(0,212,255,0.25); border-radius: 6px; padding: 2px 8px; font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .section-tag.green { background: rgba(0,255,136,0.1); color: var(--green); border-color: rgba(0,255,136,0.25); }
+  .section-tag.purple { background: rgba(163,113,247,0.1); color: var(--purple); border-color: rgba(163,113,247,0.25); }
+
+  /* NEWS GRID */
+  .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.2rem; }
+  .news-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.4rem;
+    transition: border-color .2s, transform .2s, box-shadow .2s;
+    display: flex; flex-direction: column; gap: 10px;
+    position: relative; overflow: hidden;
+  }
+  .news-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--cyan), var(--green));
+    opacity: 0; transition: opacity .2s;
+  }
+  .news-card:hover { border-color: var(--cyan); transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,212,255,0.1); }
+  .news-card:hover::before { opacity: 1; }
+  .card-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .card-category { font-size: 0.65rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .cat-subsea { background: rgba(0,212,255,0.15); color: var(--cyan); }
+  .cat-5g { background: rgba(0,255,136,0.15); color: var(--green); }
+  .cat-ma { background: rgba(247,129,102,0.15); color: var(--orange); }
+  .cat-cyber { background: rgba(163,113,247,0.15); color: var(--purple); }
+  .cat-infra { background: rgba(255,215,0,0.15); color: #ffd700; }
+  .cat-fiber { background: rgba(0,212,255,0.15); color: #7ce8ff; }
+  .card-time { font-size: 0.72rem; color: var(--text2); margin-left: auto; }
+  .news-card h3 { font-size: 0.98rem; font-weight: 600; line-height: 1.35; color: var(--text); }
+  .news-card p { font-size: 0.83rem; color: var(--text2); line-height: 1.55; flex: 1; }
+  .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
+  .card-source { font-size: 0.72rem; color: var(--text2); }
+  .card-link { font-size: 0.72rem; color: var(--cyan); text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 4px; }
+  .card-link:hover { text-decoration: underline; }
+  .breaking-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #ff4444; margin-right: 4px; animation: pulse 1.5s infinite; }
+
+  /* SECTORS GRID */
+  .sectors-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+  .sector-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.6rem 1.2rem;
+    text-align: center;
+    transition: all .2s;
+    cursor: default;
+  }
+  .sector-card:hover { border-color: var(--cyan); box-shadow: 0 0 20px rgba(0,212,255,0.08); }
+  .sector-icon { font-size: 2.2rem; margin-bottom: 0.8rem; }
+  .sector-name { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+  .sector-desc { font-size: 0.75rem; color: var(--text2); }
+  .sector-trend { display: inline-block; font-size: 0.68rem; font-weight: 600; margin-top: 8px; padding: 2px 7px; border-radius: 4px; }
+  .trend-up { background: rgba(0,255,136,0.15); color: var(--green); }
+  .trend-hot { background: rgba(247,129,102,0.15); color: var(--orange); }
+
+  /* PLAYERS GRID */
+  .players-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 1rem; }
+  .player-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.2rem 1rem;
+    text-align: center;
+    transition: all .2s;
+  }
+  .player-card:hover { border-color: var(--green); }
+  .player-logo { font-size: 2rem; margin-bottom: 6px; }
+  .player-name { font-size: 0.88rem; font-weight: 700; margin-bottom: 3px; }
+  .player-region { font-size: 0.7rem; color: var(--text2); }
+  .player-news { font-size: 0.7rem; color: var(--cyan); margin-top: 6px; line-height: 1.4; }
+
+  /* TRENDS */
+  .trends-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.2rem; }
+  .trend-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+  }
+  .trend-card h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 8px; }
+  .trend-num { font-size: 2.2rem; font-weight: 800; background: linear-gradient(135deg, var(--cyan), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.1; }
+  .trend-desc { font-size: 0.8rem; color: var(--text2); margin-top: 4px; }
+  .trend-src { font-size: 0.68rem; color: var(--border); margin-top: 8px; font-style: italic; }
+
+  /* TICKER */
+  .ticker-wrap { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); overflow: hidden; padding: 8px 0; }
+  .ticker { display: flex; gap: 0; white-space: nowrap; animation: ticker 40s linear infinite; }
+  .ticker:hover { animation-play-state: paused; }
+  @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+  .ticker-item { display: inline-flex; align-items: center; gap: 6px; padding: 0 2rem; font-size: 0.78rem; color: var(--text2); }
+  .ticker-item strong { color: var(--cyan); }
+  .ticker-sep { color: var(--border); }
+
+  /* FOOTER */
+  footer {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+  .footer-logo { font-size: 1.1rem; font-weight: 800; color: var(--cyan); margin-bottom: 0.5rem; }
+  .footer-text { font-size: 0.78rem; color: var(--text2); max-width: 600px; margin: 0 auto; }
+  .footer-update { margin-top: 1rem; font-size: 0.72rem; color: var(--text2); }
+  .footer-update strong { color: var(--green); }
+
+  /* DIVIDER */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+  @media (max-width: 768px) {
+    header { padding: 0 1rem; }
+    nav { display: none; }
+    section { padding: 2.5rem 1rem; }
+    .hero { padding: 3.5rem 1rem 2.5rem; }
+    .hero-stats { gap: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <span class="logo-icon">🌐</span>
+    EMEA Telecom &amp; Digital Infra
+    <span class="live-badge">LIVE</span>
+  </div>
+  <nav>
+    <a href="#breaking">Breaking</a>
+    <a href="#sectors">Settori</a>
+    <a href="#players">Players</a>
+    <a href="#trends">Trends</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero" style="max-width:100%; padding-left:2rem; padding-right:2rem;">
+  <div class="hero-tag">📡 Daily Intelligence — 14 Maggio 2026</div>
+  <h1>EMEA Telecom<br><span>&amp; Digital Infrastructure</span></h1>
+  <p>Le notizie più rilevanti di oggi su reti, infrastrutture digitali, M&amp;A e innovazione tecnologica in Europa, Medio Oriente e Africa.</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="num">€2.3B</div>
+      <div class="lbl">Mercato Cyber ES 2025</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">191M</div>
+      <div class="lbl">Abitazioni fiber EU27+UK</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">76.8%</div>
+      <div class="lbl">FTTH/B penetration EU</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">$200M</div>
+      <div class="lbl">ABB grid investment EU</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">$8B</div>
+      <div class="lbl">AI Data Center opportunity EU</div>
+    </div>
+  </div>
+  <div class="update-bar">⏱ Ultimo aggiornamento: <strong>14 Maggio 2026 — 07:00 CEST</strong> &nbsp;|&nbsp; Fonti: Reuters, DataCenter Dynamics, SubTel Forum, Orange, Opensignal, TelcoTitans</div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span class="ticker-item"><strong>🔵 VODAFONE</strong> FY26: merger VodafoneThree come blueprint per il mercato UK <span class="ticker-sep">|</span></span>
+    <span class="ticker-item"><strong>🟢 DEUTSCHE TELEKOM</strong> alza guidance 2026 grazie a T-Mobile US <span class="ticker-sep">|</span></span>
+    <span class="ticker-item"><strong>🔴 PROXIMUS</strong> Xavier Niel vende la sua quota del 6% nel telco belga <span class="ticker-sep">|</span></span>
+    <span class="ticker-item"><strong>🟡 IOEMA-1</strong> partnership con APTelecom per cavo sottomarino Nord del Mare del Nord <span class="ticker-sep">|</span></span>
+    <span class="ticker-item"><strong>🟣 ORANGE</strong> CyberDefense si espande in Spagna con MasOrange <span class="ticker-sep">|</span></span>
+    <span class="ticker-item"><strong>⚡ ABB</strong> investe $200M nelle grid europee per data center AI <span class="ticker-sep">|</span></span>
+    <span class="ticker-item"><strong>📡 TELEKOM SLOVENIJE</strong> lancia 5G Standalone con Ericsson: primo in Slovenia <span class="ticker-sep">|</span></span>
+    <!-- duplicate for seamless loop -->
+    <span class="ticker-item"><strong>🔵 VODAFONE</strong> FY26: merger VodafoneThree come blueprint per il mercato UK <span class="ticker-sep">|</span></span>
+    <span class="ticker-item"><strong>🟢 DEUTSCHE TELEKOM</strong> alza guidance 2026 grazie a T-Mobile US <span class="ticker-sep">|</span></span>
+    <span class="ticker-item"><strong>🔴 PROXIMUS</strong> Xavier Niel vende la sua quota del 6% nel telco belga <span class="ticker-sep">|</span></span>
+    <span class="ticker-item"><strong>🟡 IOEMA-1</strong> partnership con APTelecom per cavo sottomarino Nord del Mare del Nord <span class="ticker-sep">|</span></span>
+    <span class="ticker-item"><strong>🟣 ORANGE</strong> CyberDefense si espande in Spagna con MasOrange <span class="ticker-sep">|</span></span>
+    <span class="ticker-item"><strong>⚡ ABB</strong> investe $200M nelle grid europee per data center AI <span class="ticker-sep">|</span></span>
+    <span class="ticker-item"><strong>📡 TELEKOM SLOVENIJE</strong> lancia 5G Standalone con Ericsson: primo in Slovenia <span class="ticker-sep">|</span></span>
+  </div>
+</div>
+
+<!-- BREAKING NEWS -->
+<section id="breaking">
+  <div class="section-header">
+    <h2>🔴 Breaking News</h2>
+    <span class="section-tag">OGGI — 14 MAGGIO 2026</span>
+  </div>
+  <div class="news-grid">
+
+    <!-- Card 1 -->
+    <div class="news-card">
+      <div class="card-meta">
+        <span class="card-category cat-subsea">🔵 Subsea Cable</span>
+        <span class="card-time">🕐 19h fa</span>
+      </div>
+      <h3><span class="breaking-dot"></span>IOEMA-1 e APTelecom: cavo petabit nel Mare del Nord entro Q1 2029</h3>
+      <p>IOEMA-1 Holding B.V. (Rotterdam) annuncia una partnership strategica con APTelecom per accelerare lo sviluppo del cavo sottomarino IOEMA-1: 24 coppie di fibre, ~1.600 km, classe petabit. Il sistema collegherà Paesi Bassi, Germania, Danimarca, Norvegia e UK, rafforzando la resilienza delle reti digitali nel nord Europa. APTelecom supporta la fase commerciale per acquisire anchor customer e raggiungere lo status CIF.</p>
+      <div class="card-footer">
+        <span class="card-source">📰 SubTel Forum</span>
+        <a class="card-link" href="https://subtelforum.com/ioema-1-aptelecom-partner-on-north-sea-cable/" target="_blank">Leggi →</a>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="news-card">
+      <div class="card-category cat-5g">📡 5G Standalone</div>
+      <div class="card-meta">
+        <span class="card-time">🕐 17h fa</span>
+      </div>
+      <h3><span class="breaking-dot"></span>Telekom Slovenije lancia il primo 5G SA in Slovenia con Ericsson</h3>
+      <p>Telekom Slovenije ha attivato i primi servizi 5G Standalone (5G SA) in Slovenia in collaborazione con Ericsson, che ha fornito RAN 5G e full-stack core cloud-native. La rete abilita network slicing, VoNR e Fixed Wireless Access. Target: copertura 99% della popolazione slovena con 5G. "Un traguardo storico nella trasformazione digitale della Slovenia", ha dichiarato il board del telco.</p>
+      <div class="card-footer">
+        <span class="card-source">📰 DataCenter Dynamics</span>
+        <a class="card-link" href="https://www.datacenterdynamics.com/en/news/telekom-slovenije-partners-with-ericsson-to-launch-5g-standalone-in-slovenia/" target="_blank">Leggi →</a>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="news-card">
+      <div class="card-category cat-ma">🤝 M&amp;A / Strategia</div>
+      <div class="card-meta">
+        <span class="card-time">🕐 16h fa</span>
+      </div>
+      <h3><span class="breaking-dot"></span>Vodafone: il merger UK-Three come modello per l'Europa, ma FY26 delude</h3>
+      <p>La CEO Margherita Della Valle presenta la fusione VodafoneThree come blueprint per future consolidazioni di mercato in Europa, citando impatto immediato su crescita, performance finanziaria e capex condiviso. Tuttavia, un 2° semestre FY25-26 in chiaroscuro frena l'ottimismo: le difficoltà pre-merger pesano ancora sui numeri. Vodafone punta su sinergie di rete e riduzione dei costi operativi nel medio termine.</p>
+      <div class="card-footer">
+        <span class="card-source">📰 TelcoTitans</span>
+        <a class="card-link" href="https://www.telcotitans.com/vodafonewatch/leading-by-example-vodafone-ceo-frames-uk-integration-as-blueprint-for-future-market-evolution/10453.article" target="_blank">Leggi →</a>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="news-card">
+      <div class="card-category cat-ma">📉 M&amp;A Exit</div>
+      <div class="card-meta">
+        <span class="card-time">🕐 18h fa</span>
+      </div>
+      <h3>Xavier Niel esce da Proximus: ceduta la quota del 6% nel telco belga</h3>
+      <p>Il fondatore di Iliad Xavier Niel ha venduto la sua quota del 6% in Proximus, riducendo la posizione a meno dell'1%. Il governo belga (53.51% di Proximus) aveva bloccato ogni tentativo di takeover. Niel resta attivo nel settore: ha il 2.5% di Vodafone, il 70% di Eir (Irlanda) e NJJ Holding ha appena acquisito l'unità cilena di Telefónica per $1.2 miliardi insieme a Millicom.</p>
+      <div class="card-footer">
+        <span class="card-source">📰 DataCenter Dynamics</span>
+        <a class="card-link" href="https://www.datacenterdynamics.com/en/news/xavier-niel-sells-off-6-stake-in-belgian-telco-proximus/" target="_blank">Leggi →</a>
+      </div>
+    </div>
+
+    <!-- Card 5 -->
+    <div class="news-card">
+      <div class="card-category cat-cyber">🛡️ Cybersecurity</div>
+      <div class="card-meta">
+        <span class="card-time">🕐 19h fa</span>
+      </div>
+      <h3>Orange CyberDefense sbarca in Spagna con MasOrange: 100 esperti, CyberSOC a Madrid e Barcellona</h3>
+      <p>Orange CyberDefense entra nel mercato spagnolo in partnership con MasOrange. Il piano prevede 100 esperti iniziali, un Security Center (CyberSOC) per monitoring H24, e soluzioni scalabili per PMI e grandi aziende. Il mercato cyber spagnolo vale €2.3 miliardi (2025) con crescita del 10% annuo. Il settore pubblico genererà oltre €400M in gare nei prossimi anni. Orange CyberDefense: €1.3B di ricavi globali nel 2025, 3.300 esperti in 23 paesi.</p>
+      <div class="card-footer">
+        <span class="card-source">📰 Orange Press Release</span>
+        <a class="card-link" href="https://www.orange.com/en/press-release/orange-cyberdefense-expands-into-spain-in-collaboration-with-masorange-471993" target="_blank">Leggi →</a>
+      </div>
+    </div>
+
+    <!-- Card 6 -->
+    <div class="news-card">
+      <div class="card-category cat-infra">⚡ Grid &amp; Infra</div>
+      <div class="card-meta">
+        <span class="card-time">🕐 14h fa</span>
+      </div>
+      <h3>ABB investe $200M nelle reti europee per sostenere la domanda AI dei data center</h3>
+      <p>ABB annuncia un investimento da $200 milioni nelle infrastrutture di media tensione in Europa per rispondere alla domanda energetica esplosiva dei data center AI. Il piano include $15M a Kecskemét (Ungheria) per R&amp;D su connettori di rete e $35M a Nottingham (UK) per sistemi di protezione da fulmine. L'obiettivo: ridurre i lead time sull'attrezzatura media tensione, diventati critici per i developer di infrastrutture cloud e AI.</p>
+      <div class="card-footer">
+        <span class="card-source">📰 Data Centre Magazine</span>
+        <a class="card-link" href="https://datacentremagazine.com/news/abbs-us-200m-investment-in-europes-grids-manufacturing" target="_blank">Leggi →</a>
+      </div>
+    </div>
+
+    <!-- Card 7 -->
+    <div class="news-card">
+      <div class="card-category cat-infra">🏗️ Data Center AI</div>
+      <div class="card-meta">
+        <span class="card-time">🕐 22h fa</span>
+      </div>
+      <h3>Abu Dhabi Phoenix Group e DC Max: $8 miliardi per data center AI in Europa</h3>
+      <p>Phoenix Group (ADX: PHX, portfolio IHC di Abu Dhabi) annuncia una partnership con DC Max per sbloccare un'opportunità da $8 miliardi nel mercato europeo dei data center AI. L'operazione posiziona il Golfo come investitore strategico nell'infrastruttura digitale europea, in risposta alla domanda crescente di capacità computazionale per intelligenza artificiale nel continente.</p>
+      <div class="card-footer">
+        <span class="card-source">📰 AFP</span>
+        <a class="card-link" href="http://www.afp.com/en/infos/abu-dhabis-phoenix-group-partners-dc-max-unlock-8-billion-european-ai-data-center-opportunity" target="_blank">Leggi →</a>
+      </div>
+    </div>
+
+    <!-- Card 8 -->
+    <div class="news-card">
+      <div class="card-category cat-fiber">🔵 Fiber Broadband</div>
+      <div class="card-meta">
+        <span class="card-time">🕐 21h fa</span>
+      </div>
+      <h3>Opensignal: 191M abitazioni EU con fiber, ma solo il 55% si connette — il gap è il vero problema</h3>
+      <p>Il report Opensignal su 18 mercati europei rivela che FTTH/B raggiunge il 76.8% delle abitazioni EU27+UK (191M case), ma solo 105M (42.1%) sono abbonate. Il take-up rate è al 54.9%: la fibra è costruita ma non venduta. Il problema strategico si sposta dalla copertura alla monetizzazione. Deutsche Telekom e Vodafone Spain sono citati come operatori che puntano sull'AI per ottimizzare l'esperienza in-home e ridurre il gap di adozione.</p>
+      <div class="card-footer">
+        <span class="card-source">📰 Opensignal / FTTH Council Europe</span>
+        <a class="card-link" href="https://insights.opensignal.com/2026/05/europes-fixed-broadband-landscape-from-fiber-coverage-to-in-home-experience/dt" target="_blank">Leggi →</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+<hr class="divider">
+
+<!-- SECTORS -->
+<section id="sectors">
+  <div class="section-header">
+    <h2>📊 Settori</h2>
+    <span class="section-tag green">FOCUS AREA</span>
+  </div>
+  <div class="sectors-grid">
+    <div class="sector-card">
+      <div class="sector-icon">📡</div>
+      <div class="sector-name">5G &amp; Mobile</div>
+      <div class="sector-desc">5G SA deployments, densificazione rete, small cell, neutral host, mmWave</div>
+      <span class="sector-trend trend-up">↑ In crescita</span>
+    </div>
+    <div class="sector-card">
+      <div class="sector-icon">🔌</div>
+      <div class="sector-name">Fiber &amp; Fixed</div>
+      <div class="sector-desc">FTTH/B rollout, FWA, in-home WiFi 6, broadband adoption, last-mile</div>
+      <span class="sector-trend trend-up">↑ 76.8% copertura EU</span>
+    </div>
+    <div class="sector-card">
+      <div class="sector-icon">🏭</div>
+      <div class="sector-name">Data Centers</div>
+      <div class="sector-desc">AI compute, green power, edge, hyperscale, grid capacity, lead times</div>
+      <span class="sector-trend trend-hot">🔥 Domanda esplosiva</span>
+    </div>
+    <div class="sector-card">
+      <div class="sector-icon">☁️</div>
+      <div class="sector-name">Cloud &amp; AI</div>
+      <div class="sector-desc">AI Act EU, sovranità digitale, cloud ibrido, inferenza edge, LLM infra</div>
+      <span class="sector-trend trend-hot">🔥 Regolazione EU</span>
+    </div>
+    <div class="sector-card">
+      <div class="sector-icon">🛰️</div>
+      <div class="sector-name">Satellite &amp; Subsea</div>
+      <div class="sector-desc">Starlink EU, subsea cable resilience, LEO, IOEMA-1, Bezeq Asia-EU route</div>
+      <span class="sector-trend trend-up">↑ Nuovi investimenti</span>
+    </div>
+    <div class="sector-card">
+      <div class="sector-icon">🛡️</div>
+      <div class="sector-name">Cybersecurity</div>
+      <div class="sector-desc">MSSP, SOC-as-a-service, NIS2, AI-driven threat detection, Orange, telco sec</div>
+      <span class="sector-trend trend-hot">🔥 +10% YoY</span>
+    </div>
+  </div>
+</section>
+<hr class="divider">
+
+<!-- KEY PLAYERS -->
+<section id="players">
+  <div class="section-header">
+    <h2>🏢 Key Players EMEA</h2>
+    <span class="section-tag purple">OPERATORI &amp; VENDOR</span>
+  </div>
+  <div class="players-grid">
+    <div class="player-card">
+      <div class="player-logo">🔵</div>
+      <div class="player-name">Vodafone</div>
+      <div class="player-region">🇬🇧 UK / Pan-EU</div>
+      <div class="player-news">Merger VodafoneThree come modello EU; CEO Della Valle presenta risultati FY26</div>
+    </div>
+    <div class="player-card">
+      <div class="player-logo">🟠</div>
+      <div class="player-name">Orange</div>
+      <div class="player-region">🇫🇷 France / EMEA</div>
+      <div class="player-news">CyberDefense espansione in Spagna; MasOrange partnership attiva</div>
+    </div>
+    <div class="player-card">
+      <div class="player-logo">🩷</div>
+      <div class="player-name">Deutsche Telekom</div>
+      <div class="player-region">🇩🇪 Germany / Global</div>
+      <div class="player-news">Alza guidance 2026 su T-Mobile; +500K clienti net Q1 (FWA + fiber)</div>
+    </div>
+    <div class="player-card">
+      <div class="player-logo">🔴</div>
+      <div class="player-name">TIM / Telecom Italia</div>
+      <div class="player-region">🇮🇹 Italy</div>
+      <div class="player-news">Separazione rete e servizi; focus su B2B enterprise e cloud nazionale</div>
+    </div>
+    <div class="player-card">
+      <div class="player-logo">🟢</div>
+      <div class="player-name">KPN</div>
+      <div class="player-region">🇳🇱 Netherlands</div>
+      <div class="player-news">€4.56/azione; pressione competitiva nel mercato NL; target analisti moderato</div>
+    </div>
+    <div class="player-card">
+      <div class="player-logo">🟡</div>
+      <div class="player-name">STC Group</div>
+      <div class="player-region">🇸🇦 Saudi Arabia / MEA</div>
+      <div class="player-news">Espansione infra digitale Arabia e regione Golfo; smart city projects</div>
+    </div>
+    <div class="player-card">
+      <div class="player-logo">🟣</div>
+      <div class="player-name">e&amp; (Etisalat)</div>
+      <div class="player-region">🇦🇪 UAE / MENA</div>
+      <div class="player-news">Investimenti AI infra; partnership hyperscaler; espansione Africa subsahariana</div>
+    </div>
+    <div class="player-card">
+      <div class="player-logo">⚫</div>
+      <div class="player-name">MTN Group</div>
+      <div class="player-region">🇿🇦 Africa</div>
+      <div class="player-news">Fintech + telecom integrazione; espansione mobile money; 5G roadmap Africa</div>
+    </div>
+    <div class="player-card">
+      <div class="player-logo">🔷</div>
+      <div class="player-name">Ericsson</div>
+      <div class="player-region">🇸🇪 Global / Vendor</div>
+      <div class="player-news">5G SA deployment in Slovenia (Telekom Slovenije); partner su multiple EU launches</div>
+    </div>
+    <div class="player-card">
+      <div class="player-logo">🔴</div>
+      <div class="player-name">Proximus</div>
+      <div class="player-region">🇧🇪 Belgium</div>
+      <div class="player-news">Xavier Niel esce dal capitale; governo belga (53.5%) mantiene controllo</div>
+    </div>
+    <div class="player-card">
+      <div class="player-logo">🌐</div>
+      <div class="player-name">Iliad / NJJ</div>
+      <div class="player-region">🇫🇷 France / EU</div>
+      <div class="player-news">Exit Proximus; 2.5% Vodafone; 70% Eir Ireland; Telefónica Chile $1.2B</div>
+    </div>
+    <div class="player-card">
+      <div class="player-logo">🏗️</div>
+      <div class="player-name">ABB</div>
+      <div class="player-region">🇨🇭 Switzerland / Global</div>
+      <div class="player-news">$200M in grid EU; focus su medium-voltage per data center AI</div>
+    </div>
+  </div>
+</section>
+<hr class="divider">
+
+<!-- TRENDS & INSIGHTS -->
+<section id="trends">
+  <div class="section-header">
+    <h2>📈 Trends &amp; Insights</h2>
+    <span class="section-tag">DATI AGGIORNATI</span>
+  </div>
+  <div class="trends-grid">
+    <div class="trend-card">
+      <h4>🔌 Fiber Take-Up Gap Europa</h4>
+      <div class="trend-num">54.9%</div>
+      <div class="trend-desc">Solo il 54.9% delle abitazioni raggiunte dalla fibra si abbona. 191M case passate, solo 105M connesse. Il problema non è più la copertura, ma la monetizzazione.</div>
+      <div class="trend-src">Fonte: FTTH Council Europe Market Panorama 2026 / Opensignal, Maggio 2026</div>
+    </div>
+    <div class="trend-card">
+      <h4>🛡️ Cybersecurity Spagna</h4>
+      <div class="trend-num">€2.3B</div>
+      <div class="trend-desc">Valore del mercato cyber spagnolo nel 2025, con crescita del 10% annuo. Settore pubblico: oltre €400M in gare previste nei prossimi anni. Il 54% delle aziende spagnole ha subito un cyberattacco.</div>
+      <div class="trend-src">Fonte: Statista / Orange Press Release, 13 Maggio 2026</div>
+    </div>
+    <div class="trend-card">
+      <h4>⚡ Grid &amp; Data Center</h4>
+      <div class="trend-num">$200M</div>
+      <div class="trend-desc">Investimento ABB nelle grid europee a media tensione. I lead time per apparecchiature switchgear sono critici per i developer AI. Focus su UK (Nottingham) e Ungheria (Kecskemét).</div>
+      <div class="trend-src">Fonte: Data Centre Magazine, 13 Maggio 2026</div>
+    </div>
+    <div class="trend-card">
+      <h4>🏗️ AI Data Center EU</h4>
+      <div class="trend-num">$8B</div>
+      <div class="trend-desc">Opportunità identificata da Phoenix Group (Abu Dhabi) e DC Max nel mercato europeo dei data center AI. Il capitolo del Golfo entra come investitore strategico in EU digital infra.</div>
+      <div class="trend-src">Fonte: AFP / Phoenix Group, 13 Maggio 2026</div>
+    </div>
+    <div class="trend-card">
+      <h4>🌊 Subsea Cable — Nord Europa</h4>
+      <div class="trend-num">1.600 km</div>
+      <div class="trend-desc">Lunghezza del cavo IOEMA-1 nel Mare del Nord: 24 coppie di fibre, classe petabit. Collegherà NL, DE, DK, NO e UK. RFS previsto Q1 2029. Focus su resilienza digitale nord-europea.</div>
+      <div class="trend-src">Fonte: SubTel Forum / APTelecom, 13 Maggio 2026</div>
+    </div>
+    <div class="trend-card">
+      <h4>📡 5G Standalone Europa</h4>
+      <div class="trend-num">99%</div>
+      <div class="trend-desc">Target di copertura 5G SA di Telekom Slovenije. Il 5G SA puro (senza dipendenza dal core 4G) abilita network slicing, VoNR, latenza ultra-bassa e architettura completamente virtualizzata.</div>
+      <div class="trend-src">Fonte: DataCenter Dynamics / Ericsson, 13 Maggio 2026</div>
+    </div>
+    <div class="trend-card">
+      <h4>📊 Small Cell Market EU</h4>
+      <div class="trend-num">↑ 5G</div>
+      <div class="trend-desc">Nuovo report ResearchAndMarkets: il mercato europeo delle small cell cresce con la densificazione 5G. Opportunità indoor/outdoor, neutral host e modelli economici condivisi. La Francia resta indietro per ostacoli regolatori.</div>
+      <div class="trend-src">Fonte: GlobeNewswire / ResearchAndMarkets, 13 Maggio 2026</div>
+    </div>
+    <div class="trend-card">
+      <h4>📉 Consolidamento di Mercato</h4>
+      <div class="trend-num">M&amp;A ↑</div>
+      <div class="trend-desc">Deutsche Telekom alza guidance 2026 (+500K net adds Q1). VodafoneThree è il benchmark EU per consolidazione. Infosys nota che i deal telecom stanno crescendo in dimensione ma l'integrazione tecnologica rimane il nodo critico per le sinergie.</div>
+      <div class="trend-src">Fonte: Reuters / TelcoTitans / Infosys, 13 Maggio 2026</div>
+    </div>
+  </div>
+</section>
+<hr class="divider">
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">🌐 EMEA Telecom &amp; Digital Infra</div>
+  <p class="footer-text">Intelligence quotidiana su telecomunicazioni, infrastrutture digitali, 5G, fibra, data center e M&amp;A in Europa, Medio Oriente e Africa.</p>
+  <div class="footer-update">
+    🕐 Aggiornato il <strong>14 Maggio 2026 — 07:00 CEST</strong> &nbsp;|&nbsp;
+    Fonti: SubTel Forum · DataCenter Dynamics · TelcoTitans · Orange · Opensignal · FTTH Council Europe · AFP · Data Centre Magazine · GlobeNewswire · Reuters
+  </div>
+  <div style="margin-top: 1rem; font-size: 0.68rem; color: #30363d;">
+    Built by NextMindLab · Dati a scopo informativo · Verifica sempre le fonti originali
+  </div>
+</footer>
+
+</body>
+</html>
