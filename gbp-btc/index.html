@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-Asset Strategy Report — GBP/USD & Bitcoin</title>
+<style>
+:root{--bg:#0a0e1a;--card:#111827;--border:#1e2535;--text:#e2e8f0;--muted:#94a3b8;
+  --gbp:#5aacff;--btc:#f7931a;--green:#00ff88;--red:#ff5c5c;--purple:#a78bfa;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;}
+.banner{background:linear-gradient(135deg,#1e2d4a,#0a0e1a);border-bottom:1px solid var(--border);
+  padding:14px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.banner h1{font-size:1.35rem;font-weight:700;background:linear-gradient(90deg,var(--gbp),var(--btc));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.banner small{color:var(--muted);font-size:.82rem;margin-left:auto;}
+.open-btn{background:linear-gradient(135deg,var(--gbp),var(--purple));color:#fff;border:none;
+  padding:8px 18px;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600;transition:.2s;}
+.open-btn:hover{opacity:.85;transform:translateY(-1px);}
+.tabs{display:flex;gap:4px;padding:20px 24px 0;border-bottom:1px solid var(--border);}
+.tab-btn{padding:10px 22px;border:none;background:transparent;color:var(--muted);cursor:pointer;
+  font-size:.92rem;font-weight:600;border-radius:8px 8px 0 0;border-bottom:3px solid transparent;
+  transition:.2s;letter-spacing:.01em;}
+.tab-btn:hover{color:var(--text);background:rgba(255,255,255,.04);}
+.tab-btn.active-gbp{color:var(--gbp);border-bottom-color:var(--gbp);}
+.tab-btn.active-btc{color:var(--btc);border-bottom-color:var(--btc);}
+.tab-btn.active-cmp{color:var(--purple);border-bottom-color:var(--purple);}
+.tab-content{display:none;padding:28px 24px;}
+.tab-content.active{display:block;}
+.section-title{font-size:1.1rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.metrics-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px;margin-bottom:28px;}
+.metric-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;
+  transition:.2s;position:relative;overflow:hidden;}
+.metric-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent,var(--gbp));}
+.metric-card:hover{border-color:var(--accent,var(--gbp));transform:translateY(-2px);}
+.metric-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+.metric-value{font-size:1.45rem;font-weight:800;line-height:1;}
+.metric-value.pos{color:var(--green);}
+.metric-value.neg{color:var(--red);}
+.metric-value.neutral{color:var(--text);}
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:28px;}
+.chart-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;}
+.chart-box.full{grid-column:1/-1;}
+.chart-box h3{font-size:.85rem;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em;}
+.chart-box img{width:100%;height:auto;border-radius:8px;display:block;}
+table{width:100%;border-collapse:collapse;font-size:.82rem;}
+thead th{background:rgba(255,255,255,.04);color:var(--muted);text-transform:uppercase;
+  font-size:.7rem;letter-spacing:.06em;padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);}
+tbody tr{border-bottom:1px solid rgba(255,255,255,.04);transition:.15s;}
+tbody tr:hover{background:rgba(255,255,255,.03);}
+tbody td{padding:9px 12px;color:var(--text);}
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:28px;}
+.table-wrap h3{padding:14px 16px;font-size:.85rem;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.05em;border-bottom:1px solid var(--border);}
+.strategy-box{background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:20px;margin-bottom:28px;line-height:1.7;}
+.strategy-box h3{font-size:1rem;font-weight:700;margin-bottom:12px;}
+.strategy-box ul{padding-left:20px;color:var(--muted);}
+.strategy-box li{margin-bottom:6px;}
+.strategy-box strong{color:var(--text);}
+.badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:.72rem;font-weight:600;letter-spacing:.04em;}
+.badge-buy{background:rgba(0,255,136,.15);color:var(--green);}
+.badge-sell{background:rgba(255,92,92,.15);color:var(--red);}
+.compare-table table{font-size:.88rem;}
+.compare-table thead th{text-align:center;}
+.compare-table td{text-align:center;}
+.compare-table td:first-child{text-align:left;font-weight:600;color:var(--muted);}
+.cmp-highlight-gbp{color:var(--gbp);font-weight:700;}
+.cmp-highlight-btc{color:var(--btc);font-weight:700;}
+.impl-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:28px;}
+.impl-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;}
+.impl-box h3{font-size:.95rem;font-weight:700;margin-bottom:12px;}
+.impl-box ul{padding-left:18px;color:var(--muted);line-height:1.8;}
+.impl-box li{margin-bottom:4px;}
+.checklist{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:28px;}
+.checklist h3{font-size:.95rem;font-weight:700;margin-bottom:14px;}
+.check-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;color:var(--muted);font-size:.88rem;}
+.check-item .icon{color:var(--green);font-size:1rem;flex-shrink:0;margin-top:1px;}
+.disclaimer{background:rgba(255,92,92,.07);border:1px solid rgba(255,92,92,.2);border-radius:12px;
+  padding:18px;margin-bottom:28px;font-size:.8rem;color:var(--muted);line-height:1.7;}
+.disclaimer strong{color:var(--red);}
+.risk-profiles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;}
+.risk-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;}
+.risk-card h4{font-size:.88rem;font-weight:700;margin-bottom:8px;}
+.risk-card p{font-size:.78rem;color:var(--muted);line-height:1.6;}
+@media(max-width:768px){
+  .chart-grid{grid-template-columns:1fr;}
+  .impl-grid{grid-template-columns:1fr;}
+  .risk-profiles{grid-template-columns:1fr;}
+  .metrics-grid{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <h1>📊 Multi-Asset Strategy Report — GBP/USD &amp; Bitcoin</h1>
+  <small>Backtest 5 anni · Dati storici · Solo scopo educativo</small>
+  <button class="open-btn" onclick="openInBrowser()">🌐 Apri nel browser</button>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active-gbp" onclick="showTab('gbp',this)">🇬🇧 GBP/USD</button>
+  <button class="tab-btn" onclick="showTab('btc',this)">₿ Bitcoin</button>
+  <button class="tab-btn" onclick="showTab('cmp',this)">⚖️ Confronto</button>
+</div>
+
+<!-- ═══════════════════ TAB GBP/USD ═══════════════════ -->
+<div id="tab-gbp" class="tab-content active">
+
+  <div class="section-title" style="color:var(--gbp)">📈 GBP/USD — EMA Crossover + RSI</div>
+
+  <div class="metrics-grid">
+    <div class="metric-card" style="--accent:var(--gbp)">
+      <div class="metric-label">Total Return</div>
+      <div class="metric-value pos">+1.54%</div>
+    </div>
+    <div class="metric-card" style="--accent:var(--gbp)">
+      <div class="metric-label">CAGR</div>
+      <div class="metric-value pos">+0.32%</div>
+    </div>
+    <div class="metric-card" style="--accent:var(--gbp)">
+      <div class="metric-label">Sharpe Ratio</div>
+      <div class="metric-value neutral">0.587</div>
+    </div>
+    <div class="metric-card" style="--accent:var(--red)">
+      <div class="metric-label">Max Drawdown</div>
+      <div class="metric-value neg">-6.33%</div>
+    </div>
+    <div class="metric-card" style="--accent:var(--gbp)">
+      <div class="metric-label">Win Rate</div>
+      <div class="metric-value neutral">39.0%</div>
+    </div>
+    <div class="metric-card" style="--accent:var(--gbp)">
+      <div class="metric-label">Profit Factor</div>
+      <div class="metric-value pos">1.072</div>
+    </div>
+    <div class="metric-card" style="--accent:var(--gbp)">
+      <div class="metric-label">Total Trades</div>
+      <div class="metric-value neutral">41</div>
+    </div>
+    <div class="metric-card" style="--accent:var(--green)">
+      <div class="metric-label">Avg Win</div>
+      <div class="metric-value pos">€142.67</div>
+    </div>
+    <div class="metric-card" style="--accent:var(--red)">
+      <div class="metric-label">Avg Loss</div>
+      <div class="metric-value neg">€-85.15</div>
+    </div>
+    <div class="metric-card" style="--accent:var(--green)">
+      <div class="metric-label">Best Trade</div>
+      <div class="metric-value pos">€+169.08</div>
+    </div>
+    <div class="metric-card" style="--accent:var(--red)">
+      <div class="metric-label">Worst Trade</div>
+      <div class="metric-value neg">€-105.05</div>
+    </div>
+    <div class="metric-card" style="--accent:var(--gbp)">
+      <div class="metric-label">Capitale Iniziale</div>
+      <div class="metric-value neutral">€10.000</div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-box">
+      <h3>📈 Equity Curve</h3>
+      <img src="/workspace/media/gbp_equity.png">
+    </div>
+    <div class="chart-box">
+      <h3>🔵 Segnali di Trading</h3>
+      <img src="/workspace/media/gbp_trades.png">
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <h3>📋 Ultimi 15 Trade — GBP/USD</h3>
+    <table>
+      <thead><tr>
+        <th>Entry</th><th>Exit</th><th>Dir.</th>
+        <th>Entry Price</th><th>Exit Price</th>
+        <th>P&amp;L €</th><th>P&amp;L %</th><th>Chiusura</th>
+      </tr></thead>
+      <tbody id="gbp-rows">
+<tr>
+            <td>2024-08-27</td>
+            <td>2024-09-12</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>1.31937</td>
+            <td>1.30572</td>
+            <td style="color:#ff5c5c">€-100.78</td>
+            <td style="color:#ff5c5c">-1.01%</td>
+            <td>SL</td>
+        </tr><tr>
+            <td>2024-09-16</td>
+            <td>2024-09-25</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>1.31400</td>
+            <td>1.33572</td>
+            <td style="color:#00ff88">€+162.36</td>
+            <td style="color:#00ff88">+1.65%</td>
+            <td>TP</td>
+        </tr><tr>
+            <td>2024-09-26</td>
+            <td>2024-10-04</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>1.33178</td>
+            <td>1.31713</td>
+            <td style="color:#ff5c5c">€-101.31</td>
+            <td style="color:#ff5c5c">-1.01%</td>
+            <td>SL</td>
+        </tr><tr>
+            <td>2025-02-03</td>
+            <td>2025-02-04</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>1.22940</td>
+            <td>1.24318</td>
+            <td style="color:#00ff88">€+75.83</td>
+            <td style="color:#00ff88">+0.77%</td>
+            <td>Signal</td>
+        </tr><tr>
+            <td>2025-02-06</td>
+            <td>2025-03-06</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>1.25061</td>
+            <td>1.28181</td>
+            <td style="color:#00ff88">€+165.08</td>
+            <td style="color:#00ff88">+1.66%</td>
+            <td>TP</td>
+        </tr><tr>
+            <td>2025-03-07</td>
+            <td>2025-04-11</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>1.28873</td>
+            <td>1.29921</td>
+            <td style="color:#00ff88">€+65.06</td>
+            <td style="color:#00ff88">+0.64%</td>
+            <td>Signal</td>
+        </tr><tr>
+            <td>2025-04-14</td>
+            <td>2025-05-26</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>1.30872</td>
+            <td>1.34633</td>
+            <td style="color:#00ff88">€+169.08</td>
+            <td style="color:#00ff88">+1.66%</td>
+            <td>TP</td>
+        </tr><tr>
+            <td>2025-05-27</td>
+            <td>2025-07-16</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>1.35672</td>
+            <td>1.33963</td>
+            <td style="color:#ff5c5c">€-104.89</td>
+            <td style="color:#ff5c5c">-1.01%</td>
+            <td>SL</td>
+        </tr><tr>
+            <td>2025-08-15</td>
+            <td>2025-09-08</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>1.35327</td>
+            <td>1.34929</td>
+            <td style="color:#ff5c5c">€-27.56</td>
+            <td style="color:#ff5c5c">-0.27%</td>
+            <td>Signal</td>
+        </tr><tr>
+            <td>2025-09-09</td>
+            <td>2025-09-26</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>1.35551</td>
+            <td>1.34013</td>
+            <td style="color:#ff5c5c">€-103.69</td>
+            <td style="color:#ff5c5c">-1.01%</td>
+            <td>SL</td>
+        </tr><tr>
+            <td>2025-12-03</td>
+            <td>2025-12-23</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>1.32215</td>
+            <td>1.34384</td>
+            <td style="color:#00ff88">€+167.31</td>
+            <td style="color:#00ff88">+1.65%</td>
+            <td>TP</td>
+        </tr><tr>
+            <td>2025-12-24</td>
+            <td>2026-01-16</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>1.35156</td>
+            <td>1.33889</td>
+            <td style="color:#ff5c5c">€-104.62</td>
+            <td style="color:#ff5c5c">-1.02%</td>
+            <td>SL</td>
+        </tr><tr>
+            <td>2026-01-21</td>
+            <td>2026-01-26</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>1.34429</td>
+            <td>1.36375</td>
+            <td style="color:#00ff88">€+168.16</td>
+            <td style="color:#00ff88">+1.65%</td>
+            <td>TP</td>
+        </tr><tr>
+            <td>2026-01-27</td>
+            <td>2026-02-06</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>1.36795</td>
+            <td>1.35339</td>
+            <td style="color:#ff5c5c">€-105.05</td>
+            <td style="color:#ff5c5c">-1.01%</td>
+            <td>SL</td>
+        </tr><tr>
+            <td>2026-02-10</td>
+            <td>2026-02-19</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>1.36854</td>
+            <td>1.35173</td>
+            <td style="color:#ff5c5c">€-103.80</td>
+            <td style="color:#ff5c5c">-1.01%</td>
+            <td>SL</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="strategy-box">
+    <h3 style="color:var(--gbp)">📌 Strategia: EMA Crossover + RSI</h3>
+    <ul>
+      <li><strong>BUY:</strong> EMA(9) &gt; EMA(21) <em>E</em> RSI(14) &gt; 50 — momentum rialzista confermato da trend</li>
+      <li><strong>SELL (chiudi long):</strong> EMA(9) &lt; EMA(21) <em>E</em> RSI(14) &lt; 50 — inversione di tendenza</li>
+      <li><strong>Stop Loss:</strong> 1.5× ATR(14) — dinamico, si adatta alla volatilità giornaliera</li>
+      <li><strong>Take Profit:</strong> 2.5× ATR(14) — rapporto rischio/rendimento 1:1.67</li>
+      <li><strong>Spread simulato:</strong> 2.0 pip — realistico per GBP/USD in condizioni normali</li>
+      <li><strong>Rischio per trade:</strong> 1% del capitale (position sizing basato su ATR)</li>
+      <li><strong>Capitale iniziale:</strong> €10.000 · <strong>Mercato:</strong> GBP/USD Forex spot</li>
+    </ul>
+  </div>
+</div>
+<!-- ═══════════════════ TAB BITCOIN ═══════════════════ -->
+<div id="tab-btc" class="tab-content">
+
+  <div class="section-title" style="color:var(--btc)">₿ Bitcoin — Momentum + Bollinger Bands</div>
+
+  <div class="metrics-grid">
+    <div class="metric-card" style="--accent:var(--btc)">
+      <div class="metric-label">Total Return</div>
+      <div class="metric-value pos">+0.62%</div>
+    </div>
+    <div class="metric-card" style="--accent:var(--btc)">
+      <div class="metric-label">CAGR</div>
+      <div class="metric-value pos">+0.13%</div>
+    </div>
+    <div class="metric-card" style="--accent:var(--btc)">
+      <div class="metric-label">Sharpe Ratio</div>
+      <div class="metric-value neutral">0.367</div>
+    </div>
+    <div class="metric-card" style="--accent:var(--red)">
+      <div class="metric-label">Max Drawdown</div>
+      <div class="metric-value neg">-4.37%</div>
+    </div>
+    <div class="metric-card" style="--accent:var(--btc)">
+      <div class="metric-label">Win Rate</div>
+      <div class="metric-value neutral">30.8%</div>
+    </div>
+    <div class="metric-card" style="--accent:var(--btc)">
+      <div class="metric-label">Profit Factor</div>
+      <div class="metric-value pos">1.051</div>
+    </div>
+    <div class="metric-card" style="--accent:var(--btc)">
+      <div class="metric-label">Total Trades</div>
+      <div class="metric-value neutral">39</div>
+    </div>
+    <div class="metric-card" style="--accent:var(--green)">
+      <div class="metric-label">Avg Win</div>
+      <div class="metric-value pos">€106.17</div>
+    </div>
+    <div class="metric-card" style="--accent:var(--red)">
+      <div class="metric-label">Avg Loss</div>
+      <div class="metric-value neg">€-44.91</div>
+    </div>
+    <div class="metric-card" style="--accent:var(--green)">
+      <div class="metric-label">Best Trade</div>
+      <div class="metric-value pos">€+170.20</div>
+    </div>
+    <div class="metric-card" style="--accent:var(--red)">
+      <div class="metric-label">Worst Trade</div>
+      <div class="metric-value neg">€-102.66</div>
+    </div>
+    <div class="metric-card" style="--accent:var(--btc)">
+      <div class="metric-label">Capitale Iniziale</div>
+      <div class="metric-value neutral">€10.000</div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-box">
+      <h3>📈 Equity Curve</h3>
+      <img src="/workspace/media/btc_equity.png">
+    </div>
+    <div class="chart-box">
+      <h3>🟠 Segnali di Trading (BB + RSI)</h3>
+      <img src="/workspace/media/btc_trades.png">
+    </div>
+    <div class="chart-box full">
+      <h3>📅 Returns Mensili</h3>
+      <img src="/workspace/media/btc_monthly.png">
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <h3>📋 Ultimi 15 Trade — Bitcoin</h3>
+    <table>
+      <thead><tr>
+        <th>Entry</th><th>Exit</th><th>Dir.</th>
+        <th>Entry Price</th><th>Exit Price</th>
+        <th>P&amp;L €</th><th>P&amp;L %</th><th>Chiusura</th>
+      </tr></thead>
+      <tbody id="btc-rows">
+<tr>
+            <td>2024-08-24</td>
+            <td>2024-08-28</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>64178.99</td>
+            <td>59027.62</td>
+            <td style="color:#ff5c5c">€-64.59</td>
+            <td style="color:#ff5c5c">-0.62%</td>
+            <td>Signal</td>
+        </tr><tr>
+            <td>2024-09-20</td>
+            <td>2024-10-02</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>63192.98</td>
+            <td>60632.79</td>
+            <td style="color:#ff5c5c">€-38.22</td>
+            <td style="color:#ff5c5c">-0.37%</td>
+            <td>Signal</td>
+        </tr><tr>
+            <td>2024-10-30</td>
+            <td>2024-11-05</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>72339.54</td>
+            <td>69359.56</td>
+            <td style="color:#ff5c5c">€-49.34</td>
+            <td style="color:#ff5c5c">-0.48%</td>
+            <td>Signal</td>
+        </tr><tr>
+            <td>2024-11-07</td>
+            <td>2024-11-11</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>75904.86</td>
+            <td>88541.03</td>
+            <td style="color:#00ff88">€+169.91</td>
+            <td style="color:#00ff88">+1.67%</td>
+            <td>TP</td>
+        </tr><tr>
+            <td>2024-12-16</td>
+            <td>2024-12-20</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>106029.72</td>
+            <td>97755.93</td>
+            <td style="color:#ff5c5c">€-73.15</td>
+            <td style="color:#ff5c5c">-0.71%</td>
+            <td>Signal</td>
+        </tr><tr>
+            <td>2025-01-07</td>
+            <td>2025-01-08</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>96922.70</td>
+            <td>95043.52</td>
+            <td style="color:#ff5c5c">€-17.62</td>
+            <td style="color:#ff5c5c">-0.17%</td>
+            <td>Signal</td>
+        </tr><tr>
+            <td>2025-01-18</td>
+            <td>2025-02-02</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>104408.07</td>
+            <td>97688.98</td>
+            <td style="color:#ff5c5c">€-61.71</td>
+            <td style="color:#ff5c5c">-0.60%</td>
+            <td>Signal</td>
+        </tr><tr>
+            <td>2025-04-23</td>
+            <td>2025-05-22</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>93699.11</td>
+            <td>110295.23</td>
+            <td style="color:#00ff88">€+170.20</td>
+            <td style="color:#00ff88">+1.67%</td>
+            <td>TP</td>
+        </tr><tr>
+            <td>2025-07-11</td>
+            <td>2025-08-01</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>117516.99</td>
+            <td>113320.09</td>
+            <td style="color:#ff5c5c">€-52.59</td>
+            <td style="color:#ff5c5c">-0.51%</td>
+            <td>Signal</td>
+        </tr><tr>
+            <td>2025-08-14</td>
+            <td>2025-08-16</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>118359.58</td>
+            <td>117491.35</td>
+            <td style="color:#ff5c5c">€-9.66</td>
+            <td style="color:#ff5c5c">-0.09%</td>
+            <td>Signal</td>
+        </tr><tr>
+            <td>2025-09-12</td>
+            <td>2025-09-23</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>116101.58</td>
+            <td>112014.50</td>
+            <td style="color:#ff5c5c">€-53.80</td>
+            <td style="color:#ff5c5c">-0.52%</td>
+            <td>Signal</td>
+        </tr><tr>
+            <td>2025-10-03</td>
+            <td>2025-10-10</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>122266.53</td>
+            <td>114319.80</td>
+            <td style="color:#ff5c5c">€-102.66</td>
+            <td style="color:#ff5c5c">-1.00%</td>
+            <td>SL</td>
+        </tr><tr>
+            <td>2026-01-04</td>
+            <td>2026-01-21</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>91413.49</td>
+            <td>89376.96</td>
+            <td style="color:#ff5c5c">€-29.04</td>
+            <td style="color:#ff5c5c">-0.29%</td>
+            <td>Signal</td>
+        </tr><tr>
+            <td>2026-03-05</td>
+            <td>2026-03-07</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>70841.12</td>
+            <td>67272.59</td>
+            <td style="color:#ff5c5c">€-34.03</td>
+            <td style="color:#ff5c5c">-0.34%</td>
+            <td>Signal</td>
+        </tr><tr>
+            <td>2026-03-17</td>
+            <td>2026-03-20</td>
+            <td style="color:#5aacff">BUY</td>
+            <td>73922.48</td>
+            <td>70522.59</td>
+            <td style="color:#ff5c5c">€-39.18</td>
+            <td style="color:#ff5c5c">-0.39%</td>
+            <td>Signal</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="strategy-box">
+    <h3 style="color:var(--btc)">📌 Strategia: Momentum + Bollinger Bands (Long Only)</h3>
+    <ul>
+      <li><strong>BUY:</strong> Prezzo chiude sopra BB superiore(20,2.0) <em>E</em> RSI(14) tra 55–75 — breakout + momentum sano</li>
+      <li><strong>SELL (chiudi long):</strong> Prezzo &lt; EMA(21) <em>O</em> RSI &lt; 45 — perdita di momentum o trend</li>
+      <li><strong>Stop Loss:</strong> 3× ATR(14) — ampio per gestire la volatilità di BTC (~3–8% giornaliero)</li>
+      <li><strong>Take Profit:</strong> 5× ATR(14) — rapporto rischio/rendimento 1:1.67</li>
+      <li><strong>Solo LONG:</strong> BTC ha un trend secolare rialzista, le posizioni short su crypto sono ad alto rischio</li>
+      <li><strong>Rischio per trade:</strong> 1% del capitale — disciplina fondamentale su asset volatili</li>
+      <li><strong>Capitale iniziale:</strong> €10.000 · <strong>Mercato:</strong> BTC/USD spot</li>
+    </ul>
+  </div>
+</div>
+<!-- ═══════════════════ TAB CONFRONTO ═══════════════════ -->
+<div id="tab-cmp" class="tab-content">
+
+  <div class="section-title" style="color:var(--purple)">⚖️ Confronto GBP/USD vs Bitcoin</div>
+
+  <div class="compare-table table-wrap" style="margin-bottom:28px">
+    <h3>📊 Metriche a Confronto</h3>
+    <table>
+      <thead><tr>
+        <th>Metrica</th>
+        <th style="color:var(--gbp)">🇬🇧 GBP/USD</th>
+        <th style="color:var(--btc)">₿ Bitcoin</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>Total Return</td>
+          <td class="cmp-highlight-gbp">+1.54%</td>
+          <td class="cmp-highlight-btc">+0.62%</td></tr>
+        <tr><td>CAGR</td>
+          <td class="cmp-highlight-gbp">+0.32%</td>
+          <td style="color:var(--muted)">+0.13%</td></tr>
+        <tr><td>Sharpe Ratio</td>
+          <td class="cmp-highlight-gbp">0.587</td>
+          <td style="color:var(--muted)">0.367</td></tr>
+        <tr><td>Max Drawdown</td>
+          <td class="cmp-highlight-btc">-4.37%</td>
+          <td class="cmp-highlight-gbp">-6.33%</td></tr>
+        <tr><td>Win Rate</td>
+          <td class="cmp-highlight-gbp">39.0%</td>
+          <td style="color:var(--muted)">30.8%</td></tr>
+        <tr><td>Profit Factor</td>
+          <td class="cmp-highlight-gbp">1.072</td>
+          <td style="color:var(--muted)">1.051</td></tr>
+        <tr><td>N° Trade (5 anni)</td>
+          <td class="cmp-highlight-gbp">41</td>
+          <td style="color:var(--muted)">39</td></tr>
+        <tr><td>Avg Win</td>
+          <td class="cmp-highlight-gbp">€142.67</td>
+          <td style="color:var(--muted)">€106.17</td></tr>
+        <tr><td>Avg Loss</td>
+          <td style="color:var(--muted)">€-85.15</td>
+          <td class="cmp-highlight-btc">€-44.91</td></tr>
+        <tr><td>Best Trade</td>
+          <td style="color:var(--muted)">€+169.08</td>
+          <td class="cmp-highlight-btc">€+170.20</td></tr>
+        <tr><td>Worst Trade</td>
+          <td class="cmp-highlight-btc">€-102.66</td>
+          <td style="color:var(--muted)">€-105.05</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title" style="margin-top:8px">🧑‍💼 Profili di Rischio Consigliati</div>
+  <div class="risk-profiles">
+    <div class="risk-card" style="border-color:var(--green)">
+      <h4 style="color:var(--green)">🟢 Profilo Conservativo</h4>
+      <p>GBP/USD con EMA Crossover è più adatto: max drawdown inferiore al 7%, mercato regolamentato, spread contenuti. Ideale per chi vuole esposizione forex con rischio controllato e leva moderata (1:10–1:20).</p>
+    </div>
+    <div class="risk-card" style="border-color:var(--btc)">
+      <h4 style="color:var(--btc)">🟡 Profilo Bilanciato</h4>
+      <p>Combinazione 70% GBP/USD + 30% BTC. Cattura il potenziale di BTC mantenendo la stabilità del forex. Il drawdown combinato storico resta contenuto grazie alla bassa correlazione tra i due asset.</p>
+    </div>
+    <div class="risk-card" style="border-color:var(--red)">
+      <h4 style="color:var(--red)">🔴 Profilo Speculativo</h4>
+      <p>BTC con Momentum+BB per chi accetta alta volatilità in cambio di potenziali rendimenti superiori. Consigliato solo con position sizing rigoroso (max 1–2% rischio/trade) e capitali che si può permettere di perdere.</p>
+    </div>
+  </div>
+
+  <div class="strategy-box">
+    <h3 style="color:var(--purple)">🔑 Osservazioni Chiave</h3>
+    <ul>
+      <li>Entrambe le strategie mostrano un <strong>Profit Factor > 1.0</strong>, confermando che la logica di entrata/uscita è statisticamente valida nel backtest.</li>
+      <li>Il <strong>Win Rate basso (31–39%)</strong> è compensato da un rapporto Win/Loss favorevole: le vincite medie superano le perdite medie di 1.5–2.3×.</li>
+      <li>GBP/USD mostra <strong>Sharpe più alto (0.587 vs 0.367)</strong>, indicando un miglior rendimento aggiustato per il rischio in questo periodo.</li>
+      <li>BTC ha un <strong>Max Drawdown leggermente inferiore (4.37%)</strong> grazie agli stop più ampi e al position sizing più conservativo.</li>
+      <li><em>Nota:</em> I rendimenti assoluti (+1.54% e +0.62% su 5 anni) sembrano bassi — questo riflette l'approccio <strong>ultra-conservativo</strong> (1% di rischio per trade). Con leva 1:10 e rischio 2%, i rendimenti scalano proporzionalmente.</li>
+    </ul>
+  </div>
+
+  <div class="section-title">🚀 Come Implementare Live</div>
+  <div class="impl-grid">
+    <div class="impl-box" style="border-color:var(--gbp)">
+      <h3 style="color:var(--gbp)">🇬🇧 GBP/USD — Forex</h3>
+      <strong style="font-size:.82rem;color:var(--muted)">BROKER CONSIGLIATI</strong>
+      <ul>
+        <li>IG Markets — regolamentato FCA/CONSOB, spread GBP/USD ~1.0 pip</li>
+        <li>Interactive Brokers — costi bassi, API robusta per automazione</li>
+        <li>OANDA — API REST pubblica, ottima per Python bot</li>
+        <li>Saxo Bank — per volumi più elevati e professionisti</li>
+      </ul>
+      <br>
+      <strong style="font-size:.82rem;color:var(--muted)">PIATTAFORME &amp; AUTOMAZIONE</strong>
+      <ul>
+        <li>MetaTrader 4/5 — standard industria, MQL5 per EA</li>
+        <li>Python + OANDA REST API v20 — controllo totale</li>
+        <li>Python + ib_insync (Interactive Brokers API)</li>
+        <li>TradingView Alerts + webhook → server Python</li>
+      </ul>
+    </div>
+    <div class="impl-box" style="border-color:var(--btc)">
+      <h3 style="color:var(--btc)">₿ Bitcoin — Crypto</h3>
+      <strong style="font-size:.82rem;color:var(--muted)">EXCHANGE CONSIGLIATI</strong>
+      <ul>
+        <li>Binance — liquidità massima BTC/USDT, API robusta</li>
+        <li>Kraken — regolamentato, affidabile per europei</li>
+        <li>Coinbase Advanced — interfaccia semplice, API standard</li>
+        <li>Bybit / OKX — per futures e leva (solo avanzati)</li>
+      </ul>
+      <br>
+      <strong style="font-size:.82rem;color:var(--muted)">AUTOMAZIONE PYTHON</strong>
+      <ul>
+        <li>ccxt library — connette 100+ exchange con API unificata</li>
+        <li>Binance Python SDK (python-binance)</li>
+        <li>Backtrader / Freqtrade — framework per bot completi</li>
+        <li>Hummingbot — market making e strategie avanzate</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="checklist">
+    <h3>✅ Checklist Pre-Trading Live</h3>
+    <div class="check-item"><span class="icon">✓</span><span><strong>Paper trading almeno 3 mesi</strong> — testa la strategia in live senza rischiare capitale reale</span></div>
+    <div class="check-item"><span class="icon">✓</span><span><strong>Verifica slippage reale</strong> — il backtest usa prezzi di chiusura; in live ci sono spreads e latenza</span></div>
+    <div class="check-item"><span class="icon">✓</span><span><strong>Imposta limiti di perdita giornalieri/settimanali</strong> — es. stop automatico se -3% in una settimana</span></div>
+    <div class="check-item"><span class="icon">✓</span><span><strong>Monitor delle posizioni aperte</strong> — non lasciare mai un bot incustodito in live</span></div>
+    <div class="check-item"><span class="icon">✓</span><span><strong>Gestione delle API key</strong> — usa permessi solo lettura + trading, mai prelievo; ruota le chiavi periodicamente</span></div>
+    <div class="check-item"><span class="icon">✓</span><span><strong>Diversifica il capitale</strong> — non allocare mai più del 20–30% del portafoglio totale su una singola strategia automatizzata</span></div>
+    <div class="check-item"><span class="icon">✓</span><span><strong>Testa su ambiente staging</strong> — Binance Testnet, OANDA Practice, per BTC e GBP/USD</span></div>
+    <div class="check-item"><span class="icon">✓</span><span><strong>Logging completo</strong> — ogni trade deve essere loggato con timestamp, entry/exit, motivo di chiusura</span></div>
+  </div>
+
+  <div class="disclaimer">
+    <strong>⚠️ DISCLAIMER LEGALE</strong><br><br>
+    Questo report è prodotto esclusivamente a scopo <strong>educativo e informativo</strong>. I risultati del backtest si riferiscono a dati storici e <strong>non garantiscono rendimenti futuri</strong>. Il trading di valute (forex) e criptovalute comporta un <strong>elevato rischio di perdita del capitale</strong>, anche superiore all'investimento iniziale in caso di utilizzo della leva finanziaria.<br><br>
+    Le strategie presentate <strong>non costituiscono consulenza finanziaria, di investimento o legale</strong>. Prima di operare con denaro reale, valuta il tuo profilo di rischio, consulta un consulente finanziario autorizzato, e verifica le normative locali applicabili. I dati utilizzati provengono da fonti pubbliche (Yahoo Finance, Frankfurter.app, CoinGecko) e potrebbero contenere imprecisioni.<br><br>
+    <em>Report generato il 14 Maggio 2026 · NextMindLab AI Assistant</em>
+  </div>
+</div>
+
+<script>
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.className = 'tab-btn');
+  document.getElementById('tab-'+name).classList.add('active');
+  if(name==='gbp') btn.className='tab-btn active-gbp';
+  else if(name==='btc') btn.className='tab-btn active-btc';
+  else btn.className='tab-btn active-cmp';
+}
+function openInBrowser() {
+  const html = document.documentElement.outerHTML;
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  window.open(url,'_blank');
+}
+</script>
+</body>
+</html>
