@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EMA Crossover Strategy — EUR/USD Backtest Report</title>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg2: #101627;
+    --bg3: #151c30;
+    --border: #1e2d4a;
+    --green: #00ff88;
+    --yellow: #f0d060;
+    --red: #ff4466;
+    --blue: #4488ff;
+    --white: #e8eaf0;
+    --muted: #7888aa;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: var(--font);
+    line-height: 1.65;
+    min-height: 100vh;
+  }
+
+  /* BROWSER BANNER */
+  #browser-banner {
+    background: linear-gradient(135deg, #1a2540, #0d1528);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--muted);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  #browser-banner span { color: var(--yellow); }
+  #browser-banner button {
+    background: var(--green);
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+  }
+  #browser-banner button:hover { opacity: 0.85; }
+  #banner-inline { display: none; }
+
+  /* LAYOUT */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px 60px; }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(180deg, #0d1528 0%, var(--bg) 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 44px 24px 36px;
+    text-align: center;
+    position: relative;
+  }
+  header .badge {
+    display: inline-block;
+    background: rgba(0,255,136,0.12);
+    border: 1px solid rgba(0,255,136,0.35);
+    color: var(--green);
+    border-radius: 20px;
+    padding: 4px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  header h1 {
+    font-size: clamp(22px, 4vw, 38px);
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+  header h1 em { color: var(--green); font-style: normal; }
+  header .sub {
+    color: var(--muted);
+    font-size: 15px;
+  }
+  header .sub span { color: var(--yellow); }
+
+  /* SECTION */
+  section { margin-top: 44px; }
+  section h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--green);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  section h2 .icon { font-size: 20px; }
+
+  /* METRICS GRID */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 16px;
+  }
+  .metric-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 18px;
+    text-align: center;
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .metric-card:hover { transform: translateY(-2px); border-color: var(--green); }
+  .metric-card .label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .metric-card .value {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.1;
+  }
+  .metric-card .value.pos { color: var(--green); }
+  .metric-card .value.neg { color: var(--red); }
+  .metric-card .value.neu { color: var(--yellow); }
+  .metric-card .sub-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* CHART SECTION */
+  .chart-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .chart-title {
+    padding: 14px 20px 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+  .chart-wrap img {
+    width: 100%;
+    display: block;
+  }
+
+  /* TRADES TABLE */
+  .table-wrap {
+    overflow-x: auto;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead tr {
+    background: var(--bg3);
+  }
+  thead th {
+    padding: 12px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border);
+  }
+  tbody tr {
+    border-bottom: 1px solid rgba(30,45,74,0.6);
+    transition: background 0.1s;
+  }
+  tbody tr:hover { background: rgba(0,255,136,0.04); }
+  tbody td {
+    padding: 10px 14px;
+    white-space: nowrap;
+  }
+  .tag-buy  { background: rgba(0,255,136,0.15); color: var(--green); border-radius: 4px; padding: 2px 8px; font-size: 11px; font-weight: 700; }
+  .tag-sell { background: rgba(255,68,102,0.15); color: var(--red);   border-radius: 4px; padding: 2px 8px; font-size: 11px; font-weight: 700; }
+  .tag-win  { color: var(--green); font-weight: 700; }
+  .tag-loss { color: var(--red);   font-weight: 700; }
+  .pnl-pos  { color: var(--green); font-weight: 600; }
+  .pnl-neg  { color: var(--red);   font-weight: 600; }
+
+  /* INFO BOXES */
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  .info-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+  }
+  .info-box h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    color: var(--yellow);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .info-box ul {
+    list-style: none;
+    padding: 0;
+  }
+  .info-box ul li {
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(30,45,74,0.5);
+    font-size: 14px;
+    color: var(--white);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .info-box ul li:last-child { border-bottom: none; }
+  .info-box ul li::before { content: "›"; color: var(--green); font-weight: 700; flex-shrink: 0; }
+  .info-box p { font-size: 14px; color: var(--muted); line-height: 1.7; }
+  .info-box code {
+    background: rgba(0,255,136,0.1);
+    color: var(--green);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* RULE TABLE */
+  .rule-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .rule-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .rule-table td:first-child {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    width: 160px;
+    white-space: nowrap;
+  }
+
+  /* NEXT STEPS */
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .step-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+  }
+  .step-card .step-n {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(0,255,136,0.15);
+    border: 1px solid rgba(0,255,136,0.4);
+    color: var(--green);
+    font-weight: 800;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  .step-card h4 { font-size: 15px; color: var(--white); margin-bottom: 8px; }
+  .step-card p  { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .step-card a  { color: var(--blue); text-decoration: none; }
+  .step-card a:hover { text-decoration: underline; }
+
+  /* DISCLAIMER */
+  .disclaimer {
+    margin-top: 48px;
+    background: rgba(255,68,102,0.06);
+    border: 1px solid rgba(255,68,102,0.25);
+    border-radius: 12px;
+    padding: 20px 24px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .disclaimer strong { color: var(--red); }
+
+  /* FOOTER */
+  footer {
+    margin-top: 40px;
+    padding: 20px 24px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  footer span { color: var(--green); font-weight: 600; }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 20px; }
+    .container { padding: 0 14px 40px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- BROWSER BANNER -->
+<div id="browser-banner">
+  <span>&#128202; Visualizzazione ottimale nel browser &mdash; grafici interattivi disponibili</span>
+  <button onclick="copyPath()">Apri nel Browser</button>
+</div>
+
+<header>
+  <div class="container">
+    <div class="badge">Backtest Report &bull; EUR/USD</div>
+    <h1>&#127919; EMA Crossover Strategy &mdash; <em>EUR/USD</em></h1>
+    <p class="sub">
+      Periodo analizzato: <span>Maggio 2021 &rarr; Maggio 2026</span> &bull;
+      Dati: <span>Frankfurter.app (live)</span> &bull;
+      Generato: <span id="gen-date"></span>
+    </p>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- METRICS -->
+  <section>
+    <h2><span class="icon">&#128200;</span> Metriche Chiave</h2>
+    <div class="metrics-grid">
+
+      <div class="metric-card">
+        <div class="label">Return Totale</div>
+        <div class="value pos">+19.14%</div>
+        <div class="sub-label">su 5 anni</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="label">CAGR</div>
+        <div class="value pos">+3.55%</div>
+        <div class="sub-label">annuo composto</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="label">Sharpe Ratio</div>
+        <div class="value neu">0.88</div>
+        <div class="sub-label">risk-adjusted</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="label">Max Drawdown</div>
+        <div class="value neg">-3.39%</div>
+        <div class="sub-label">picco a valle</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="label">Win Rate</div>
+        <div class="value neu">50.0%</div>
+        <div class="sub-label">23 win / 23 loss</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="label">Profit Factor</div>
+        <div class="value pos">1.87</div>
+        <div class="sub-label">gross profit / loss</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="label">Avg Win</div>
+        <div class="value pos">+&euro;178.74</div>
+        <div class="sub-label">per trade vincente</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="label">Avg Loss</div>
+        <div class="value neg">-&euro;95.51</div>
+        <div class="sub-label">per trade perdente</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="label">Totale Trade</div>
+        <div class="value neu">46</div>
+        <div class="sub-label">in 5 anni</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="label">Capitale Finale</div>
+        <div class="value pos">&euro;11.914</div>
+        <div class="sub-label">da &euro;10.000</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CHARTS -->
+  <section>
+    <h2><span class="icon">&#128196;</span> Grafici</h2>
+
+    <div class="chart-wrap">
+      <div class="chart-title">Equity Curve &mdash; Capitale nel tempo</div>
+      <img src="/workspace/media/forex_equity.png" alt="Equity Curve" loading="lazy">
+    </div>
+
+    <div class="chart-wrap">
+      <div class="chart-title">EUR/USD &mdash; Segnali BUY / SELL con EMA e RSI</div>
+      <img src="/workspace/media/forex_trades.png" alt="Trade Signals" loading="lazy">
+    </div>
+
+    <div class="chart-wrap">
+      <div class="chart-title">P&amp;L Mensile (% capitale iniziale)</div>
+      <img src="/workspace/media/forex_monthly.png" alt="Monthly Returns" loading="lazy">
+    </div>
+  </section>
+
+  <!-- TRADES TABLE -->
+  <section>
+    <h2><span class="icon">&#128203;</span> Ultimi 20 Trade</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Entrata</th>
+            <th>Uscita</th>
+            <th>Dir.</th>
+            <th>Entry Price</th>
+            <th>Exit Price</th>
+            <th>Stop Loss</th>
+            <th>Take Profit</th>
+            <th>P&amp;L (pip)</th>
+            <th>P&amp;L (&euro;)</th>
+            <th>Risultato</th>
+          </tr>
+        </thead>
+        <tbody id="trades-tbody">
+          <!-- filled by JS -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section>
+    <h2><span class="icon">&#9881;</span> Come Funziona la Strategia</h2>
+    <div class="info-grid">
+
+      <div class="info-box">
+        <h3>&#128270; Segnali di Entrata</h3>
+        <ul>
+          <li><strong>BUY</strong>: EMA(9) incrocia al rialzo EMA(21) e RSI(14) &gt; 50 — trend rialzista confermato</li>
+          <li><strong>SELL</strong>: EMA(9) incrocia al ribasso EMA(21) e RSI(14) &lt; 50 — trend ribassista confermato</li>
+          <li>Il doppio filtro riduce i falsi segnali in mercati laterali</li>
+          <li>L'RSI &gt; / &lt; 50 garantisce momentum allineato alla direzione</li>
+        </ul>
+      </div>
+
+      <div class="info-box">
+        <h3>&#128200; Logica degli Indicatori</h3>
+        <ul>
+          <li><code>EMA(9)</code>: media mobile veloce, segue i prezzi a breve termine</li>
+          <li><code>EMA(21)</code>: media mobile lenta, filtra il trend di fondo</li>
+          <li><code>RSI(14)</code>: oscillatore momentum 0&ndash;100 (50 = neutro)</li>
+          <li><code>ATR(14)</code>: volatilità media, calibra stop e target dinamicamente</li>
+        </ul>
+      </div>
+
+      <div class="info-box">
+        <h3>&#127919; Uscita dalla Posizione</h3>
+        <ul>
+          <li>Stop Loss colpito: chiusura automatica in perdita limitata</li>
+          <li>Take Profit colpito: chiusura in profitto (R:R = 1:1.67)</li>
+          <li>Segnale inverso: chiusura anticipata se la direzione si inverte</li>
+          <li>Nessun trailing stop (versione base della strategia)</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- RISK MANAGEMENT -->
+  <section>
+    <h2><span class="icon">&#128737;</span> Risk Management</h2>
+    <div class="info-box" style="max-width:700px">
+      <table class="rule-table">
+        <tr>
+          <td>Capitale iniziale</td>
+          <td>&euro;10.000</td>
+        </tr>
+        <tr>
+          <td>Rischio per trade</td>
+          <td>1% del capitale corrente (&asymp;&euro;100 al primo trade)</td>
+        </tr>
+        <tr>
+          <td>Stop Loss</td>
+          <td>1.5 &times; ATR(14) dal prezzo di entrata</td>
+        </tr>
+        <tr>
+          <td>Take Profit</td>
+          <td>2.5 &times; ATR(14) dal prezzo di entrata</td>
+        </tr>
+        <tr>
+          <td>Risk:Reward</td>
+          <td>1 : 1.67 — positivo anche con &lt; 50% win rate</td>
+        </tr>
+        <tr>
+          <td>Spread simulato</td>
+          <td>1.5 pip EUR/USD (media broker ECN)</td>
+        </tr>
+        <tr>
+          <td>Leva</td>
+          <td>Variabile — calcolata in base al rischio e all&rsquo;ATR</td>
+        </tr>
+        <tr>
+          <td>Max draw corrente</td>
+          <td>-3.39% (eccellente per strategia trend-following)</td>
+        </tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- NEXT STEPS -->
+  <section>
+    <h2><span class="icon">&#128640;</span> Prossimi Passi &mdash; Come Implementarla Live</h2>
+    <div class="steps-grid">
+
+      <div class="step-card">
+        <div class="step-n">1</div>
+        <h4>Scegli un Broker</h4>
+        <p>Cerca broker regolamentati (FCA, ESMA) con spread EUR/USD &le; 1.5 pip e piattaforma MT4/MT5 o API FIX. Esempi di categoria: IC Markets, Pepperstone, Interactive Brokers.</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-n">2</div>
+        <h4>Testa in Demo</h4>
+        <p>Esegui la strategia in paper trading per almeno 3 mesi prima di usare capitale reale. Verifica che i segnali live corrispondano al backtest.</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-n">3</div>
+        <h4>Automatizza con Python</h4>
+        <p>Usa <a href="https://ccxt.pro" target="_blank">CCXT</a>, <a href="https://pypi.org/project/MetaTrader5/" target="_blank">MetaTrader5 Python API</a> o <a href="https://oanda-api-v20.readthedocs.io/" target="_blank">OANDA v20 API</a> per eseguire gli ordini automaticamente.</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-n">4</div>
+        <h4>Monitora e Ottimizza</h4>
+        <p>Tieni un journal dei trade. Ottimizza i parametri (EMA 9/21, moltiplicatori ATR) con walk-forward testing per evitare overfitting.</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-n">5</div>
+        <h4>Migliora la Strategia</h4>
+        <p>Aggiungi filtro di trend H4/D1, trailing ATR stop, filtro notizie economiche (NFP, BCE, Fed). Considera time-filter per evitare sessione asiatica.</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-n">6</div>
+        <h4>Gestione del Portafoglio</h4>
+        <p>Non concentrare tutto su EUR/USD. Diversifica su GBP/USD, USD/JPY con la stessa strategia per ridurre la correlazione e migliorare lo Sharpe.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- DISCLAIMER -->
+  <div class="disclaimer">
+    <strong>&#9888; Disclaimer legale:</strong>
+    Questo report è prodotto esclusivamente a scopo <strong>educativo e informativo</strong>.
+    I risultati del backtest si riferiscono a performance storiche simulate e <strong>non garantiscono risultati futuri</strong>.
+    Il trading su valute (Forex) comporta un elevato rischio di perdita del capitale investito.
+    Fino all'88% dei conti retail perde denaro nel trading CFD.
+    Nessuna parte di questo documento costituisce consulenza finanziaria, investimento raccomandato o sollecitazione all'investimento ai sensi del D.Lgs. 58/1998 (TUF) e della Direttiva MiFID II.
+    Prima di operare con capitale reale, valuta il tuo profilo di rischio e consulta un consulente finanziario autorizzato da Banca d'Italia / CONSOB.
+  </div>
+
+</div><!-- /container -->
+
+<footer>
+  <div class="container">
+    Generato da <span>NextMindLab AI</span> &bull; EMA Crossover Strategy &mdash; EUR/USD &bull;
+    Dati: Frankfurter.app &bull; Periodo: 2021&ndash;2026
+  </div>
+</footer>
+
+<!-- INLINE DATA -->
+<script>
+const TRADES_DATA = [{"entry_date": "2024-02-27 00:00:00", "exit_date": "2024-03-26 00:00:00", "direction": "BUY", "entry_price": 1.08575, "exit_price": 1.08535, "sl": 1.07672, "tp": 1.1008, "pnl_pips": -4.0, "pnl_euro": -4.97, "result": "LOSS", "capital_after": 11214.49}, {"entry_date": "2024-03-26 00:00:00", "exit_date": "2024-04-12 00:00:00", "direction": "SELL", "entry_price": 1.08535, "exit_price": 1.06934, "sl": 1.09505, "tp": 1.06919, "pnl_pips": 160.1, "pnl_euro": 185.17, "result": "WIN", "capital_after": 11399.67}, {"entry_date": "2024-05-10 00:00:00", "exit_date": "2024-06-11 00:00:00", "direction": "BUY", "entry_price": 1.07805, "exit_price": 1.07285, "sl": 1.06873, "tp": 1.09359, "pnl_pips": -52.0, "pnl_euro": -63.59, "result": "LOSS", "capital_after": 11336.07}, {"entry_date": "2024-06-11 00:00:00", "exit_date": "2024-07-04 00:00:00", "direction": "SELL", "entry_price": 1.07285, "exit_price": 1.08289, "sl": 1.08274, "tp": 1.05637, "pnl_pips": -100.4, "pnl_euro": -115.08, "result": "LOSS", "capital_after": 11220.99}, {"entry_date": "2024-07-05 00:00:00", "exit_date": "2024-08-01 00:00:00", "direction": "BUY", "entry_price": 1.08255, "exit_price": 1.07875, "sl": 1.07251, "tp": 1.09928, "pnl_pips": -38.0, "pnl_euro": -42.49, "result": "LOSS", "capital_after": 11178.5}, {"entry_date": "2024-08-01 00:00:00", "exit_date": "2024-08-05 00:00:00", "direction": "SELL", "entry_price": 1.07875, "exit_price": 1.07235, "sl": 1.08854, "tp": 1.06202, "pnl_pips": 64.0, "pnl_euro": 68.69, "result": "WIN", "capital_after": 11247.19}, {"entry_date": "2024-08-09 00:00:00", "exit_date": "2024-09-19 00:00:00", "direction": "BUY", "entry_price": 1.09165, "exit_price": 1.10025, "sl": 1.0812, "tp": 1.11781, "pnl_pips": 86.0, "pnl_euro": 102.3, "result": "WIN", "capital_after": 11349.49}, {"entry_date": "2024-09-19 00:00:00", "exit_date": "2024-10-22 00:00:00", "direction": "SELL", "entry_price": 1.11655, "exit_price": 1.08268, "sl": 1.12661, "tp": 1.09131, "pnl_pips": 338.7, "pnl_euro": 397.68, "result": "WIN", "capital_after": 11747.17}, {"entry_date": "2024-10-22 00:00:00", "exit_date": "2024-11-22 00:00:00", "direction": "BUY", "entry_price": 1.08265, "exit_price": 1.04938, "sl": 1.07233, "tp": 1.10842, "pnl_pips": -332.7, "pnl_euro": -368.74, "result": "LOSS", "capital_after": 11378.43}, {"entry_date": "2024-11-22 00:00:00", "exit_date": "2024-12-17 00:00:00", "direction": "SELL", "entry_price": 1.04805, "exit_price": 1.04345, "sl": 1.0568, "tp": 1.03618, "pnl_pips": 46.0, "pnl_euro": 55.42, "result": "WIN", "capital_after": 11433.85}, {"entry_date": "2024-12-17 00:00:00", "exit_date": "2025-01-13 00:00:00", "direction": "BUY", "entry_price": 1.05645, "exit_price": 1.02742, "sl": 1.04615, "tp": 1.08218, "pnl_pips": -290.3, "pnl_euro": -306.05, "result": "LOSS", "capital_after": 11127.8}, {"entry_date": "2025-01-13 00:00:00", "exit_date": "2025-02-13 00:00:00", "direction": "SELL", "entry_price": 1.02605, "exit_price": 1.01551, "sl": 1.03625, "tp": 1.00058, "pnl_pips": 105.4, "pnl_euro": 115.38, "result": "WIN", "capital_after": 11243.18}, {"entry_date": "2025-02-13 00:00:00", "exit_date": "2025-03-13 00:00:00", "direction": "BUY", "entry_price": 1.04825, "exit_price": 1.03795, "sl": 1.03815, "tp": 1.07449, "pnl_pips": -103.0, "pnl_euro": -120.98, "result": "LOSS", "capital_after": 11122.2}, {"entry_date": "2025-03-13 00:00:00", "exit_date": "2025-04-03 00:00:00", "direction": "BUY", "entry_price": 1.09015, "exit_price": 1.07985, "sl": 1.07985, "tp": 1.11584, "pnl_pips": -103.0, "pnl_euro": -116.43, "result": "LOSS", "capital_after": 11005.77}, {"entry_date": "2025-04-03 00:00:00", "exit_date": "2025-06-04 00:00:00", "direction": "BUY", "entry_price": 1.09165, "exit_price": 1.14531, "sl": 1.07485, "tp": 1.13365, "pnl_pips": 536.6, "pnl_euro": 641.31, "result": "WIN", "capital_after": 11647.08}, {"entry_date": "2025-06-04 00:00:00", "exit_date": "2025-07-07 00:00:00", "direction": "SELL", "entry_price": 1.14345, "exit_price": 1.13315, "sl": 1.15445, "tp": 1.11595, "pnl_pips": 103.0, "pnl_euro": 125.08, "result": "WIN", "capital_after": 11772.16}, {"entry_date": "2025-07-07 00:00:00", "exit_date": "2025-08-05 00:00:00", "direction": "BUY", "entry_price": 1.17865, "exit_price": 1.16865, "sl": 1.16835, "tp": 1.20496, "pnl_pips": -100.0, "pnl_euro": -115.2, "result": "LOSS", "capital_after": 11272.65}, {"entry_date": "2025-10-06 00:00:00", "exit_date": "2025-11-04 00:00:00", "direction": "SELL", "entry_price": 1.16765, "exit_price": 1.1476, "sl": 1.17977, "tp": 1.14745, "pnl_pips": 200.5, "pnl_euro": 186.48, "result": "WIN", "capital_after": 11459.13}, {"entry_date": "2025-12-01 00:00:00", "exit_date": "2025-12-23 00:00:00", "direction": "BUY", "entry_price": 1.16475, "exit_price": 1.1807, "sl": 1.15509, "tp": 1.18085, "pnl_pips": 159.5, "pnl_euro": 189.21, "result": "WIN", "capital_after": 11648.34}, {"entry_date": "2026-01-09 00:00:00", "exit_date": "2026-01-20 00:00:00", "direction": "SELL", "entry_price": 1.16405, "exit_price": 1.17411, "sl": 1.17396, "tp": 1.14754, "pnl_pips": -100.6, "pnl_euro": -118.25, "result": "LOSS", "capital_after": 11530.09}, {"entry_date": "2026-01-22 00:00:00", "exit_date": "2026-01-27 00:00:00", "direction": "BUY", "entry_price": 1.17075, "exit_price": 1.18851, "sl": 1.16, "tp": 1.18866, "pnl_pips": 177.6, "pnl_euro": 190.56, "result": "WIN", "capital_after": 11720.65}, {"entry_date": "2026-02-23 00:00:00", "exit_date": "2026-03-03 00:00:00", "direction": "SELL", "entry_price": 1.17825, "exit_price": 1.16161, "sl": 1.18832, "tp": 1.16146, "pnl_pips": 166.4, "pnl_euro": 193.6, "result": "WIN", "capital_after": 11914.25}];
+
+document.getElementById('gen-date').textContent = new Date().toLocaleDateString('it-IT', {day:'2-digit', month:'long', year:'numeric'});
+
+// Render trades table
+const tbody = document.getElementById('trades-tbody');
+TRADES_DATA.forEach((t, i) => {
+  const isWin = t.result === 'WIN';
+  const isBuy = t.direction === 'BUY';
+  const entryD = new Date(t.entry_date).toLocaleDateString('it-IT', {day:'2-digit',month:'2-digit',year:'numeric'});
+  const exitD  = new Date(t.exit_date).toLocaleDateString('it-IT',  {day:'2-digit',month:'2-digit',year:'numeric'});
+  tbody.innerHTML += `<tr>
+    <td style="color:var(--muted);font-size:12px">${TRADES_DATA.length - i}</td>
+    <td>${entryD}</td>
+    <td>${exitD}</td>
+    <td><span class="${isBuy ? 'tag-buy' : 'tag-sell'}">${t.direction}</span></td>
+    <td>${t.entry_price.toFixed(5)}</td>
+    <td>${t.exit_price.toFixed(5)}</td>
+    <td style="color:var(--red);font-size:12px">${t.sl.toFixed(5)}</td>
+    <td style="color:var(--green);font-size:12px">${t.tp.toFixed(5)}</td>
+    <td class="${t.pnl_pips >= 0 ? 'pnl-pos' : 'pnl-neg'}">${t.pnl_pips >= 0 ? '+' : ''}${t.pnl_pips.toFixed(1)}</td>
+    <td class="${t.pnl_euro >= 0 ? 'pnl-pos' : 'pnl-neg'}">${t.pnl_euro >= 0 ? '+' : ''}€${t.pnl_euro.toFixed(2)}</td>
+    <td><span class="${isWin ? 'tag-win' : 'tag-loss'}">${isWin ? '✓ WIN' : '✗ LOSS'}</span></td>
+  </tr>`;
+});
+
+// Copy path button
+function copyPath() {
+  const p = window.location.pathname || document.location.href;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(p).then(() => alert('Percorso copiato: ' + p));
+  } else {
+    alert('Apri questo file nel browser: ' + p);
+  }
+}
+</script>
+
+</body>
+</html>
