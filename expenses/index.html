@@ -2,1161 +2,1033 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Expense Tracker — Note Spese</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>💼 SpeseFacili — Note Spese</title>
 <script>
 (function(){
   var banner = document.createElement('div');
   banner.id = 'open-banner';
   banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#2563eb;color:#fff;text-align:center;padding:10px 16px;font-family:system-ui,sans-serif;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:12px;box-shadow:0 2px 12px rgba(0,0,0,0.3)';
-  banner.innerHTML = '💼 Per usare l\'app: <b>scarica il file → aprilo in Chrome o Safari</b> &nbsp;|&nbsp; <button onclick="document.getElementById(\'open-banner\').remove();document.body.style.paddingTop=\'52px\'" style="background:rgba(255,255,255,0.2);border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-weight:700;color:#fff">✕</button>';
-  document.addEventListener('DOMContentLoaded', function(){ document.body.insertBefore(banner, document.body.firstChild); document.body.style.paddingTop='88px'; });
+  banner.innerHTML = '💼 Per usare l\'app: <b>scarica il file → aprilo in Chrome o Safari</b> &nbsp;|&nbsp; <button onclick="document.getElementById(\'open-banner\').remove();document.body.style.paddingTop=\'0\'" style="background:rgba(255,255,255,0.2);border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-weight:700;color:#fff">✕</button>';
+  document.addEventListener('DOMContentLoaded', function(){ document.body.insertBefore(banner, document.body.firstChild); document.body.style.paddingTop='44px'; });
 })();
 </script>
 <style>
+/* ===== RESET & BASE ===== */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --blue-dark:#1a2744;
-  --blue:#2563eb;
-  --blue-light:#dbeafe;
-  --green:#16a34a;
-  --green-light:#dcfce7;
-  --red:#dc2626;
-  --red-light:#fee2e2;
-  --amber:#d97706;
-  --amber-light:#fef3c7;
-  --gray-50:#f9fafb;
-  --gray-100:#f3f4f6;
-  --gray-200:#e5e7eb;
-  --gray-300:#d1d5db;
-  --gray-400:#9ca3af;
-  --gray-500:#6b7280;
-  --gray-600:#4b5563;
-  --gray-700:#374151;
-  --gray-800:#1f2937;
-  --white:#ffffff;
-  --shadow-sm:0 1px 2px rgba(0,0,0,.06);
-  --shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
-  --shadow-md:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.06);
-  --shadow-lg:0 10px 15px rgba(0,0,0,.1),0 4px 6px rgba(0,0,0,.05);
-  --radius:8px;
-  --radius-lg:12px;
+  --bg:#f8fafc;
+  --surface:#ffffff;
+  --primary:#2563eb;
+  --primary-light:#eff6ff;
+  --text:#1e293b;
+  --text-muted:#64748b;
+  --border:#e2e8f0;
+  --radius:16px;
+  --shadow:0 1px 3px rgba(0,0,0,0.08),0 4px 16px rgba(0,0,0,0.04);
+  --shadow-hover:0 4px 12px rgba(0,0,0,0.12),0 8px 32px rgba(0,0,0,0.06);
+  --nav-h:72px;
+  /* category colors */
+  --c-flight:#0ea5e9;
+  --c-hotel:#8b5cf6;
+  --c-meal:#f59e0b;
+  --c-taxi:#10b981;
+  --c-train:#6366f1;
+  --c-parking:#64748b;
+  --c-phone:#ec4899;
+  --c-conference:#f97316;
+  --c-other:#94a3b8;
 }
-body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--gray-50);color:var(--gray-800);min-height:100vh;font-size:14px;line-height:1.5}
-/* ---- HEADER ---- */
-#app-header{background:var(--blue-dark);color:#fff;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:44px;z-index:100;box-shadow:var(--shadow-md)}
-#app-header .logo{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:700;letter-spacing:-.3px}
-#app-header .logo span.emoji{font-size:20px}
-#header-meta{display:flex;align-items:center;gap:16px;font-size:12px;color:rgba(255,255,255,.7)}
-#header-meta b{color:#fff}
-/* ---- NAV ---- */
-#main-nav{background:var(--white);border-bottom:1px solid var(--gray-200);padding:0 24px;display:flex;gap:0;position:sticky;top:100px;z-index:99;box-shadow:var(--shadow-sm);overflow-x:auto}
-.nav-tab{padding:14px 18px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:600;color:var(--gray-500);border-bottom:3px solid transparent;white-space:nowrap;transition:all .15s;display:flex;align-items:center;gap:6px}
-.nav-tab:hover{color:var(--blue);background:var(--gray-50)}
-.nav-tab.active{color:var(--blue);border-bottom-color:var(--blue)}
-/* ---- MAIN ---- */
-#main-content{max-width:1100px;margin:0 auto;padding:24px 16px}
+html{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);-webkit-text-size-adjust:100%}
+body{min-height:100vh;padding-bottom:calc(var(--nav-h) + 16px)}
+
+/* ===== LAYOUT ===== */
+.app-header{background:linear-gradient(135deg,#1d4ed8 0%,#2563eb 60%,#3b82f6 100%);color:#fff;padding:24px 20px 20px;text-align:center;position:relative}
+.app-header h1{font-size:1.7rem;font-weight:800;letter-spacing:-0.5px}
+.app-header p{font-size:.85rem;opacity:.85;margin-top:4px}
+.header-badge{display:inline-block;background:rgba(255,255,255,0.2);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.3);border-radius:24px;padding:6px 18px;margin-top:12px;font-size:.9rem;font-weight:700}
+.header-badge span{opacity:.75;font-weight:400;font-size:.8rem;margin-right:4px}
+
+.main-content{max-width:600px;margin:0 auto;padding:20px 16px 0}
+
+/* ===== BOTTOM NAV ===== */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:100;box-shadow:0 -4px 24px rgba(0,0,0,0.06)}
+.nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:none;background:none;cursor:pointer;font-size:.68rem;font-weight:600;color:var(--text-muted);transition:color .2s,transform .15s;padding:8px 0;position:relative}
+.nav-tab .nav-icon{font-size:1.5rem;transition:transform .2s}
+.nav-tab.active{color:var(--primary)}
+.nav-tab.active .nav-icon{transform:scale(1.15)}
+.nav-tab:active{transform:scale(.95)}
+.nav-tab-add{background:var(--primary)!important;color:#fff!important;border-radius:50%;width:52px;height:52px;align-self:center;margin-top:-20px;box-shadow:0 4px 16px rgba(37,99,235,.5);flex:none}
+.nav-tab-add .nav-icon{font-size:1.6rem}
+.nav-tab-add span{display:none}
+
+/* ===== SECTIONS ===== */
 .section{display:none}
-.section.active{display:block}
-/* ---- CARDS ---- */
-.card{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow);border:1px solid var(--gray-200);padding:20px}
-.card-title{font-size:15px;font-weight:700;color:var(--gray-800);margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.card-title .icon{font-size:18px}
-/* ---- STAT CARDS ---- */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
-.stat-card{background:var(--white);border-radius:var(--radius-lg);border:1px solid var(--gray-200);padding:20px;box-shadow:var(--shadow)}
-.stat-card .label{font-size:12px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
-.stat-card .value{font-size:28px;font-weight:800;color:var(--blue-dark);line-height:1}
-.stat-card .sub{font-size:12px;color:var(--gray-500);margin-top:6px}
-.stat-card.green .value{color:var(--green)}
-.stat-card.red .value{color:var(--red)}
-/* ---- PERIOD SELECTOR ---- */
-.period-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
-.period-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--gray-300);background:var(--white);font-size:12px;font-weight:600;cursor:pointer;color:var(--gray-600);transition:all .15s}
-.period-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
-.period-custom{display:flex;gap:6px;align-items:center}
-.period-custom input{padding:5px 8px;border:1px solid var(--gray-300);border-radius:6px;font-size:12px;color:var(--gray-700)}
-/* ---- BAR CHART ---- */
-.chart-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.chart-row .cat-label{min-width:130px;font-size:12px;font-weight:600;color:var(--gray-700);display:flex;align-items:center;gap:6px}
-.chart-bar-wrap{flex:1;background:var(--gray-100);border-radius:4px;height:18px;overflow:hidden}
-.chart-bar{height:100%;border-radius:4px;transition:width .4s ease;background:var(--blue)}
-.chart-row .chart-val{min-width:80px;text-align:right;font-size:12px;font-weight:700;color:var(--gray-700)}
-/* ---- STATUS BADGE ---- */
-.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
-.badge.draft{background:var(--amber-light);color:var(--amber)}
-.badge.ready{background:var(--green-light);color:var(--green)}
-.badge.reimb-yes{background:var(--green-light);color:var(--green)}
-.badge.reimb-no{background:var(--gray-100);color:var(--gray-500)}
-/* ---- BIG CTA ---- */
-.btn-cta{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:16px;border-radius:var(--radius-lg);background:var(--blue);color:#fff;font-size:15px;font-weight:700;border:none;cursor:pointer;box-shadow:var(--shadow-md);transition:background .15s}
-.btn-cta:hover{background:#1d4ed8}
-/* ---- FORM ---- */
-.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
-.form-field{display:flex;flex-direction:column;gap:4px}
-.form-field.full{grid-column:1/-1}
-.form-field label{font-size:12px;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:.4px}
-.form-field input,.form-field select,.form-field textarea{padding:9px 12px;border:1px solid var(--gray-300);border-radius:var(--radius);font-size:14px;color:var(--gray-800);background:var(--white);transition:border-color .15s;font-family:inherit}
-.form-field input:focus,.form-field select:focus,.form-field textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
-.form-field textarea{resize:vertical;min-height:72px}
-.amount-wrap{display:flex;gap:0}
-.amount-wrap select{border-radius:var(--radius) 0 0 var(--radius);border-right:none;background:var(--gray-100);min-width:74px;font-weight:700}
-.amount-wrap input{border-radius:0 var(--radius) var(--radius) 0;flex:1}
-.checkbox-field{display:flex;align-items:center;gap:8px;padding:10px 0}
-.checkbox-field input[type=checkbox]{width:16px;height:16px;accent-color:var(--blue)}
-.checkbox-field label{font-size:14px;font-weight:600;color:var(--gray-700);cursor:pointer}
-/* ---- RECEIPT UPLOAD ---- */
-.upload-area{border:2px dashed var(--gray-300);border-radius:var(--radius-lg);padding:20px;text-align:center;cursor:pointer;transition:all .15s;background:var(--gray-50)}
-.upload-area:hover{border-color:var(--blue);background:var(--blue-light)}
-.upload-area .upload-icon{font-size:28px;margin-bottom:8px}
-.upload-area p{font-size:12px;color:var(--gray-500);margin-top:4px}
-.upload-area input[type=file]{display:none}
-.receipt-preview{margin-top:10px;display:flex;align-items:center;gap:10px;background:var(--gray-100);border-radius:var(--radius);padding:8px 12px}
-.receipt-preview img{width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid var(--gray-200)}
-.receipt-preview .receipt-name{font-size:12px;font-weight:600;color:var(--gray-700);flex:1}
-.receipt-preview .remove-receipt{background:none;border:none;color:var(--red);cursor:pointer;font-size:16px}
-/* ---- BUTTONS ---- */
-.btn{padding:8px 16px;border-radius:var(--radius);border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
-.btn-primary{background:var(--blue);color:#fff}.btn-primary:hover{background:#1d4ed8}
-.btn-success{background:var(--green);color:#fff}.btn-success:hover{background:#15803d}
-.btn-danger{background:var(--red);color:#fff}.btn-danger:hover{background:#b91c1c}
-.btn-ghost{background:var(--gray-100);color:var(--gray-700);border:1px solid var(--gray-200)}.btn-ghost:hover{background:var(--gray-200)}
-.btn-sm{padding:4px 10px;font-size:12px}
-.btn-icon{padding:5px 7px;font-size:14px}
-/* ---- TABLE ---- */
-.table-wrap{overflow-x:auto;margin-top:0}
-table{width:100%;border-collapse:collapse;font-size:13px}
-thead th{background:var(--gray-50);padding:10px 12px;text-align:left;font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--gray-200);white-space:nowrap;cursor:pointer;user-select:none}
-thead th:hover{color:var(--blue)}
-thead th .sort-icon{margin-left:4px;opacity:.4}
-thead th.sorted .sort-icon{opacity:1;color:var(--blue)}
-tbody tr{border-bottom:1px solid var(--gray-100);transition:background .1s}
-tbody tr:hover{background:var(--gray-50)}
-tbody tr.selected{background:var(--blue-light)}
-td{padding:10px 12px;vertical-align:middle}
-td.amount{font-weight:700;text-align:right;color:var(--gray-800)}
-.receipt-thumb{width:32px;height:32px;object-fit:cover;border-radius:4px;cursor:pointer;border:1px solid var(--gray-200)}
-.no-receipt{color:var(--gray-300);font-size:18px}
-tfoot td{padding:10px 12px;font-weight:700;background:var(--gray-50);border-top:2px solid var(--gray-200)}
-/* ---- FILTERS ---- */
-.filter-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;padding:14px;background:var(--gray-50);border-radius:var(--radius);border:1px solid var(--gray-200)}
-.filter-bar input,.filter-bar select{padding:6px 10px;border:1px solid var(--gray-300);border-radius:6px;font-size:12px;color:var(--gray-700);background:var(--white)}
-.filter-bar label{font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase}
-/* ---- MODAL ---- */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
-.modal-overlay.hidden{display:none}
-.modal{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);max-width:560px;width:100%;max-height:90vh;overflow-y:auto}
-.modal-header{padding:20px 24px 16px;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-between}
-.modal-header h3{font-size:16px;font-weight:700;color:var(--gray-800)}
-.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--gray-400);padding:2px 6px}.modal-close:hover{color:var(--gray-700)}
-.modal-body{padding:20px 24px}
-.modal-footer{padding:16px 24px;border-top:1px solid var(--gray-200);display:flex;justify-content:flex-end;gap:10px}
-/* ---- REPORT FORM ---- */
-.report-preview{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius);padding:16px;margin-top:16px;font-size:13px;color:var(--gray-600)}
-.report-preview b{color:var(--gray-800)}
-/* ---- ALERTS ---- */
-.toast{position:fixed;bottom:24px;right:24px;z-index:2000;background:var(--gray-800);color:#fff;padding:12px 20px;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);font-size:13px;font-weight:600;transform:translateY(100px);opacity:0;transition:all .3s}
-.toast.show{transform:translateY(0);opacity:1}
-.toast.success{background:var(--green)}
-.toast.error{background:var(--red)}
-/* ---- EMPTY STATE ---- */
-.empty-state{text-align:center;padding:48px 24px;color:var(--gray-400)}
-.empty-state .empty-icon{font-size:48px;margin-bottom:12px}
-.empty-state p{font-size:14px}
-/* ---- TOOLTIP ---- */
-[title]{position:relative;cursor:help}
-/* ---- MULTI-SELECT ---- */
-.select-all-wrap{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px;color:var(--gray-600)}
-/* ---- RESPONSIVE ---- */
-@media(max-width:640px){
-  #app-header{padding:0 12px}
-  #main-nav{padding:0 8px}
-  .nav-tab{padding:12px 10px;font-size:12px}
-  #main-content{padding:16px 10px}
-  .stats-grid{grid-template-columns:1fr 1fr}
-  .form-grid{grid-template-columns:1fr}
-  .filter-bar{flex-direction:column;align-items:flex-start}
-}
-@media print{
-  body *{display:none}
-  #print-area,#print-area *{display:block}
-}
+.section.active{display:block;animation:fadeUp .3s ease}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeOut{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.95)}}
+
+/* ===== CARDS ===== */
+.card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-bottom:14px}
+.card:hover{box-shadow:var(--shadow-hover)}
+
+/* ===== HERO CARD ===== */
+.hero-card{background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;border-radius:var(--radius);padding:28px 24px;margin-bottom:14px;box-shadow:0 8px 32px rgba(37,99,235,.35)}
+.hero-label{font-size:.8rem;font-weight:600;opacity:.8;text-transform:uppercase;letter-spacing:.05em}
+.hero-amount{font-size:3rem;font-weight:800;letter-spacing:-2px;line-height:1;margin:6px 0 4px}
+.hero-sub{font-size:.85rem;opacity:.75}
+
+.mini-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.mini-card{background:var(--surface);border-radius:12px;padding:14px 12px;text-align:center;box-shadow:var(--shadow)}
+.mini-card .mc-value{font-size:1.25rem;font-weight:800;color:var(--primary)}
+.mini-card .mc-label{font-size:.72rem;color:var(--text-muted);margin-top:2px}
+
+/* ===== EXPENSE CARDS ===== */
+.expense-card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:0;margin-bottom:12px;overflow:hidden;animation:slideIn .3s ease;transition:box-shadow .2s}
+.expense-card:hover{box-shadow:var(--shadow-hover)}
+.expense-card.removing{animation:fadeOut .25s ease forwards}
+.ec-main{display:flex;align-items:center;gap:14px;padding:16px}
+.ec-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.ec-body{flex:1;min-width:0}
+.ec-title{font-size:.95rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ec-meta{font-size:.78rem;color:var(--text-muted);margin-top:2px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ec-amount{font-size:1.15rem;font-weight:800;white-space:nowrap}
+.ec-badge{display:inline-flex;align-items:center;gap:3px;background:#ecfdf5;color:#059669;border-radius:20px;padding:2px 8px;font-size:.72rem;font-weight:600}
+.ec-badge.no{background:#f1f5f9;color:#94a3b8}
+.ec-actions{display:flex;border-top:1px solid var(--border);padding:8px 16px;gap:8px;background:#fafbfc}
+.ec-btn{flex:1;padding:8px;border:none;background:none;border-radius:8px;cursor:pointer;font-size:.8rem;font-weight:600;color:var(--text-muted);display:flex;align-items:center;justify-content:center;gap:5px;transition:background .15s,color .15s}
+.ec-btn:hover{background:var(--border);color:var(--text)}
+.ec-btn.del:hover{background:#fee2e2;color:#dc2626}
+.ec-btn.receipt-btn:hover{background:#eff6ff;color:#2563eb}
+.ec-details{padding:0 16px 14px;background:#fafbfc;border-top:1px solid var(--border);font-size:.82rem;color:var(--text-muted);display:none}
+.ec-details.open{display:block;animation:fadeUp .2s ease}
+.ec-details p{margin-top:6px}
+
+/* ===== FORM ===== */
+.form-section{margin-bottom:22px}
+.form-label{font-size:.8rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;display:block}
+.amount-input-wrap{position:relative;margin-bottom:6px}
+.amount-prefix{position:absolute;left:20px;top:50%;transform:translateY(-50%);font-size:2rem;font-weight:700;color:var(--text-muted);pointer-events:none}
+#f-amount{width:100%;padding:20px 20px 20px 56px;font-size:2.5rem;font-weight:800;border:2px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);outline:none;transition:border .2s;-moz-appearance:textfield}
+#f-amount::-webkit-outer-spin-button,#f-amount::-webkit-inner-spin-button{-webkit-appearance:none}
+#f-amount:focus{border-color:var(--primary)}
+
+.pill-row{display:flex;gap:8px;flex-wrap:wrap}
+.pill{padding:8px 16px;border-radius:20px;border:2px solid var(--border);background:var(--surface);cursor:pointer;font-size:.85rem;font-weight:600;color:var(--text-muted);transition:all .2s;white-space:nowrap}
+.pill.active{border-color:var(--primary);background:var(--primary-light);color:var(--primary)}
+.pill:active{transform:scale(.95)}
+
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.cat-pill{padding:14px 8px;border-radius:14px;border:2px solid var(--border);background:var(--surface);cursor:pointer;text-align:center;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:5px}
+.cat-pill .cat-emoji{font-size:1.6rem;line-height:1}
+.cat-pill .cat-name{font-size:.72rem;font-weight:700;color:var(--text-muted)}
+.cat-pill.active{border-color:transparent;color:#fff}
+.cat-pill.active .cat-name{color:#fff;opacity:.9}
+.cat-pill:active{transform:scale(.95)}
+
+.field-wrap{margin-bottom:0}
+.field-wrap input,.field-wrap textarea,.field-wrap select{width:100%;padding:14px 16px;font-size:1rem;border:2px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text);outline:none;font-family:inherit;transition:border .2s}
+.field-wrap input:focus,.field-wrap textarea:focus,.field-wrap select:focus{border-color:var(--primary)}
+.field-wrap textarea{resize:vertical;min-height:80px}
+
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--surface);border-radius:12px;border:2px solid var(--border)}
+.toggle-label{font-size:.95rem;font-weight:600}
+.toggle-sub{font-size:.78rem;color:var(--text-muted)}
+.ios-toggle{position:relative;width:50px;height:28px;flex-shrink:0}
+.ios-toggle input{opacity:0;width:0;height:0}
+.ios-slider{position:absolute;inset:0;background:#cbd5e1;border-radius:14px;cursor:pointer;transition:.3s}
+.ios-slider::before{content:'';position:absolute;height:22px;width:22px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 2px 4px rgba(0,0,0,.15)}
+input:checked+.ios-slider{background:var(--primary)}
+input:checked+.ios-slider::before{transform:translateX(22px)}
+
+.receipt-drop{border:2px dashed var(--border);border-radius:14px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg)}
+.receipt-drop:hover,.receipt-drop.drag{border-color:var(--primary);background:var(--primary-light)}
+.receipt-drop .rd-icon{font-size:2.5rem;margin-bottom:8px}
+.receipt-drop p{font-size:.85rem;color:var(--text-muted)}
+.receipt-drop p b{color:var(--primary)}
+#receipt-preview{margin-top:10px;display:none}
+#receipt-preview img{max-width:100%;max-height:180px;border-radius:10px;object-fit:cover}
+
+.save-btn{width:100%;padding:18px;background:var(--primary);color:#fff;border:none;border-radius:14px;font-size:1.1rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(37,99,235,.4);transition:transform .15s,box-shadow .15s;position:sticky;bottom:calc(var(--nav-h) + 12px)}
+.save-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(37,99,235,.45)}
+.save-btn:active{transform:scale(.98)}
+
+/* ===== LIST ===== */
+.filter-chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.filter-chips::-webkit-scrollbar{display:none}
+.chip{padding:7px 16px;border-radius:20px;border:2px solid var(--border);background:var(--surface);cursor:pointer;font-size:.82rem;font-weight:600;color:var(--text-muted);white-space:nowrap;transition:all .2s}
+.chip.active{border-color:var(--primary);background:var(--primary-light);color:var(--primary)}
+.chip:active{transform:scale(.95)}
+
+.list-total-bar{position:sticky;bottom:var(--nav-h);background:var(--surface);border-top:1px solid var(--border);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 -4px 16px rgba(0,0,0,.06);border-radius:16px 16px 0 0;z-index:10}
+.list-total-bar .lt-label{font-size:.8rem;color:var(--text-muted);font-weight:600}
+.list-total-bar .lt-amount{font-size:1.3rem;font-weight:800;color:var(--primary)}
+
+.empty-state{text-align:center;padding:60px 20px;color:var(--text-muted)}
+.empty-state .es-icon{font-size:3.5rem;margin-bottom:12px}
+.empty-state p{font-size:.95rem}
+
+/* ===== DONUT / CHART ===== */
+.cat-breakdown{display:flex;flex-direction:column;gap:10px}
+.cat-row{display:flex;align-items:center;gap:10px}
+.cat-row .cr-emoji{font-size:1.1rem;width:24px;text-align:center}
+.cat-row .cr-label{flex:1;font-size:.85rem;font-weight:600}
+.cat-row .cr-bar-wrap{flex:2;background:var(--border);border-radius:4px;height:8px;overflow:hidden}
+.cat-row .cr-bar{height:100%;border-radius:4px;transition:width .6s ease}
+.cat-row .cr-pct{font-size:.78rem;font-weight:700;color:var(--text-muted);min-width:36px;text-align:right}
+
+/* ===== REPORT ===== */
+.report-preview-box{background:var(--primary-light);border:2px solid var(--primary);border-radius:14px;padding:20px;text-align:center;margin-bottom:16px}
+.rpb-label{font-size:.8rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.05em}
+.rpb-amount{font-size:2.2rem;font-weight:800;color:var(--primary);margin:4px 0}
+.rpb-sub{font-size:.82rem;color:#3b82f6}
+
+.gen-btn{width:100%;padding:18px;background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;border:none;border-radius:14px;font-size:1.1rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(37,99,235,.4);transition:transform .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.gen-btn:hover{transform:translateY(-1px)}
+.gen-btn:active{transform:scale(.98)}
+
+.csv-btn{width:100%;padding:14px;background:var(--surface);color:var(--primary);border:2px solid var(--primary);border-radius:14px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .2s}
+.csv-btn:hover{background:var(--primary-light)}
+
+/* ===== TOAST ===== */
+.toast{position:fixed;bottom:calc(var(--nav-h) + 16px);left:50%;transform:translateX(-50%) translateY(30px);background:#1e293b;color:#fff;padding:12px 24px;border-radius:24px;font-size:.9rem;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,.3);opacity:0;transition:opacity .3s,transform .3s;z-index:9998;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success{background:#059669}
+.toast.error{background:#dc2626}
+
+/* ===== SECTION TITLE ===== */
+.section-title{font-size:1.1rem;font-weight:800;margin-bottom:16px;color:var(--text);display:flex;align-items:center;gap:8px}
+
+@media(max-width:400px){.cat-grid{grid-template-columns:repeat(3,1fr)}.hero-amount{font-size:2.4rem}}
 </style>
 </head>
 <body>
-
 <!-- HEADER -->
-<div id="app-header">
-  <div class="logo"><span class="emoji">💼</span> Expense Tracker</div>
-  <div id="header-meta">
-    <span>Nota Spese <b id="hdr-ns-num">NS-2026-001</b></span>
-    <span id="hdr-status" class="badge draft">Bozza</span>
-  </div>
+<div class="app-header">
+  <h1>💼 SpeseFacili</h1>
+  <p>Gestione note spese professionale</p>
+  <div class="header-badge"><span>Questo mese</span><span id="hdr-total">€ 0,00</span></div>
 </div>
 
-<!-- NAV -->
-<nav id="main-nav">
-  <button class="nav-tab active" data-section="dashboard" onclick="switchSection('dashboard')">📋 Dashboard</button>
-  <button class="nav-tab" data-section="add" onclick="switchSection('add')">➕ Aggiungi</button>
-  <button class="nav-tab" data-section="list" onclick="switchSection('list')">📊 Lista Spese</button>
-  <button class="nav-tab" data-section="report" onclick="switchSection('report')">📄 Genera Report</button>
+<!-- MAIN CONTENT -->
+<div class="main-content">
+
+  <!-- ============ HOME ============ -->
+  <div id="section-home" class="section active">
+    <div class="hero-card">
+      <div class="hero-label">Totale spese — <span id="dash-period-label">Questo mese</span></div>
+      <div class="hero-amount" id="dash-total">€ 0,00</div>
+      <div class="hero-sub" id="dash-period-range">—</div>
+    </div>
+
+    <div class="mini-cards">
+      <div class="mini-card">
+        <div class="mc-value" id="dash-count">0</div>
+        <div class="mc-label">Spese</div>
+      </div>
+      <div class="mini-card">
+        <div class="mc-value" id="dash-avg">€ 0</div>
+        <div class="mc-label">Media</div>
+      </div>
+      <div class="mini-card">
+        <div class="mc-value" id="dash-reimb">€ 0</div>
+        <div class="mc-label">Da rimb.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">📊 Per categoria</div>
+      <div class="cat-breakdown" id="cat-breakdown"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">🕐 Ultime spese</div>
+      <div id="recent-list"></div>
+    </div>
+  </div>
+
+  <!-- ============ ADD ============ -->
+  <div id="section-add" class="section">
+    <div class="form-section">
+      <label class="form-label">💶 Importo</label>
+      <div class="amount-input-wrap">
+        <span class="amount-prefix" id="currency-prefix">€</span>
+        <input type="number" id="f-amount" inputmode="decimal" placeholder="0.00" step="0.01" min="0">
+      </div>
+      <div class="pill-row" id="currency-pills">
+        <div class="pill active" data-cur="EUR" onclick="setCurrency(this,'EUR','€')">€ EUR</div>
+        <div class="pill" data-cur="USD" onclick="setCurrency(this,'USD','$')">$ USD</div>
+        <div class="pill" data-cur="GBP" onclick="setCurrency(this,'GBP','£')">£ GBP</div>
+        <div class="pill" data-cur="CHF" onclick="setCurrency(this,'CHF','₣')">₣ CHF</div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <label class="form-label">📅 Data</label>
+      <div class="pill-row" id="date-pills">
+        <div class="pill active" data-dmode="today" onclick="setDateMode(this,'today')">Oggi</div>
+        <div class="pill" data-dmode="yesterday" onclick="setDateMode(this,'yesterday')">Ieri</div>
+        <div class="pill" data-dmode="custom" onclick="setDateMode(this,'custom')">Scegli data</div>
+      </div>
+      <div id="custom-date-wrap" style="margin-top:10px;display:none">
+        <div class="field-wrap"><input type="date" id="f-date"></div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <label class="form-label">🏷️ Categoria</label>
+      <div class="cat-grid" id="cat-grid"></div>
+    </div>
+
+    <div class="form-section">
+      <label class="form-label">📝 Descrizione</label>
+      <div class="field-wrap"><input type="text" id="f-desc" placeholder="Descrivi la spesa..."></div>
+    </div>
+
+    <div class="form-section">
+      <label class="form-label">💼 Cliente / Progetto</label>
+      <div class="field-wrap"><input type="text" id="f-client" placeholder="Cliente o progetto" list="client-suggestions"></div>
+      <datalist id="client-suggestions"></datalist>
+    </div>
+
+    <div class="form-section">
+      <label class="form-label">🖼️ Foto ricevuta</label>
+      <div class="receipt-drop" id="receipt-drop" onclick="document.getElementById('f-receipt').click()">
+        <div class="rd-icon">📷</div>
+        <p><b>Tocca per aggiungere</b> o trascina qui</p>
+        <p>JPG, PNG, PDF</p>
+      </div>
+      <input type="file" id="f-receipt" accept="image/*,application/pdf" style="display:none">
+      <div id="receipt-preview"><img id="receipt-img" src=""></div>
+    </div>
+
+    <div class="form-section">
+      <label class="form-label">💳 Rimborso</label>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Spesa rimborsabile</div>
+          <div class="toggle-sub">Includi nel totale da rimborsare</div>
+        </div>
+        <label class="ios-toggle"><input type="checkbox" id="f-reimb" checked><span class="ios-slider"></span></label>
+      </div>
+    </div>
+
+    <button class="save-btn" onclick="saveExpense()">✓ Salva Spesa</button>
+    <div style="height:20px"></div>
+  </div>
+
+  <!-- ============ LIST ============ -->
+  <div id="section-list" class="section">
+    <div class="filter-chips" id="filter-chips">
+      <div class="chip active" data-filter="all" onclick="setListFilter(this,'all')">Tutte</div>
+      <div class="chip" data-filter="week" onclick="setListFilter(this,'week')">Questa settimana</div>
+      <div class="chip" data-filter="month" onclick="setListFilter(this,'month')">Questo mese</div>
+    </div>
+    <div style="height:12px"></div>
+    <div id="expense-list"></div>
+    <div id="list-empty" class="empty-state" style="display:none">
+      <div class="es-icon">📭</div>
+      <p>Nessuna spesa trovata</p>
+    </div>
+    <div class="list-total-bar">
+      <span class="lt-label">Totale filtrato</span>
+      <span class="lt-amount" id="list-total">€ 0,00</span>
+    </div>
+  </div>
+
+  <!-- ============ REPORT ============ -->
+  <div id="section-report" class="section">
+    <div class="report-preview-box">
+      <div class="rpb-label">Totale nel report</div>
+      <div class="rpb-amount" id="r-preview-amount">€ 0,00</div>
+      <div class="rpb-sub" id="r-preview-sub">0 spese nel periodo</div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">👤 Dati</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="field-wrap"><input type="text" id="r-name" placeholder="Nome dipendente *"></div>
+        <div class="field-wrap"><input type="text" id="r-company" placeholder="Azienda"></div>
+        <div class="field-wrap"><input type="text" id="r-nsnum" placeholder="N° nota spese"></div>
+        <div class="field-wrap"><input type="text" id="r-client" placeholder="Filtra per cliente (opz.)"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">📅 Periodo</div>
+      <div class="pill-row" style="margin-bottom:12px">
+        <div class="pill active" data-rp="week" onclick="setReportPeriod(this,'week')">Questa settimana</div>
+        <div class="pill" data-rp="month" onclick="setReportPeriod(this,'month')">Questo mese</div>
+        <div class="pill" data-rp="custom" onclick="setReportPeriod(this,'custom')">Personalizzato</div>
+      </div>
+      <div id="r-custom-dates" style="display:none;display:flex;gap:10px">
+        <div class="field-wrap" style="flex:1"><input type="date" id="r-from" placeholder="Da"></div>
+        <div class="field-wrap" style="flex:1"><input type="date" id="r-to" placeholder="A"></div>
+      </div>
+      <div style="margin-top:12px">
+        <div class="toggle-row">
+          <div><div class="toggle-label">Solo rimborsabili</div></div>
+          <label class="ios-toggle"><input type="checkbox" id="r-only-reimb" onchange="updateReportPreview()"><span class="ios-slider"></span></label>
+        </div>
+        <div class="toggle-row" style="margin-top:10px">
+          <div><div class="toggle-label">Includi ricevute</div></div>
+          <label class="ios-toggle"><input type="checkbox" id="r-include-receipts" checked><span class="ios-slider"></span></label>
+        </div>
+      </div>
+    </div>
+
+    <button class="gen-btn" onclick="generatePDF()">📄 Genera &amp; Stampa PDF</button>
+    <button class="csv-btn" onclick="exportCSV()">⬇️ Esporta CSV</button>
+    <div style="height:20px"></div>
+  </div>
+
+</div><!-- /main-content -->
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-tab active" data-section="home" onclick="showSection('home',this)">
+    <span class="nav-icon">🏠</span><span>Home</span>
+  </button>
+  <button class="nav-tab nav-tab-add" data-section="add" onclick="showSection('add',this)">
+    <span class="nav-icon">➕</span>
+  </button>
+  <button class="nav-tab" data-section="list" onclick="showSection('list',this)">
+    <span class="nav-icon">📋</span><span>Spese</span>
+  </button>
+  <button class="nav-tab" data-section="report" onclick="showSection('report',this)">
+    <span class="nav-icon">📄</span><span>Report</span>
+  </button>
 </nav>
 
-<!-- MAIN -->
-<main id="main-content">
-
-  <!-- ==================== DASHBOARD ==================== -->
-  <div id="section-dashboard" class="section active">
-    <div class="period-bar">
-      <span style="font-size:12px;font-weight:700;color:var(--gray-500);text-transform:uppercase">Periodo:</span>
-      <button class="period-btn" onclick="setPeriod('week',this)">Settimana</button>
-      <button class="period-btn active" onclick="setPeriod('month',this)">Mese</button>
-      <button class="period-btn" onclick="setPeriod('all',this)">Tutto</button>
-      <div class="period-custom">
-        <input type="date" id="period-from" onchange="setPeriod('custom',null)">
-        <span style="font-size:12px;color:var(--gray-400)">→</span>
-        <input type="date" id="period-to" onchange="setPeriod('custom',null)">
-      </div>
-    </div>
-
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="label">💶 Totale Spese</div>
-        <div class="value" id="stat-total">€ 0</div>
-        <div class="sub" id="stat-count">0 voci</div>
-      </div>
-      <div class="stat-card green">
-        <div class="label">✅ Rimborsabile</div>
-        <div class="value" id="stat-reimb">€ 0</div>
-        <div class="sub" id="stat-reimb-count">0 voci</div>
-      </div>
-      <div class="stat-card red">
-        <div class="label">❌ Non Rimborsabile</div>
-        <div class="value" id="stat-noreimb">€ 0</div>
-        <div class="sub" id="stat-noreimb-count">0 voci</div>
-      </div>
-      <div class="stat-card">
-        <div class="label">📎 Ricevute</div>
-        <div class="value" id="stat-receipts">0</div>
-        <div class="sub">caricate</div>
-      </div>
-    </div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px" class="dash-bottom-grid">
-      <div class="card">
-        <div class="card-title"><span class="icon">📊</span> Spese per Categoria</div>
-        <div id="cat-chart">
-          <div class="empty-state"><div class="empty-icon">📊</div><p>Nessuna spesa</p></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-title"><span class="icon">📋</span> Stato Nota Spese</div>
-        <div style="display:flex;flex-direction:column;gap:12px">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:13px;color:var(--gray-600)">Stato attuale</span>
-            <span id="dash-status" class="badge draft">Bozza</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:13px;color:var(--gray-600)">Numero</span>
-            <span style="font-weight:700;color:var(--gray-800)" id="dash-ns-num">NS-2026-001</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:13px;color:var(--gray-600)">Voci totali</span>
-            <span style="font-weight:700;color:var(--gray-800)" id="dash-count2">0</span>
-          </div>
-          <hr style="border:none;border-top:1px solid var(--gray-200)">
-          <button class="btn btn-ghost" onclick="markReady()" id="btn-mark-ready">📝 Segna Pronta per Invio</button>
-        </div>
-      </div>
-    </div>
-
-    <button class="btn-cta" onclick="switchSection('report')">📄 Genera PDF Nota Spese</button>
-  </div>
-
-  <!-- ==================== ADD ==================== -->
-  <div id="section-add" class="section">
-    <div class="card">
-      <div class="card-title"><span class="icon">➕</span> <span id="form-title">Nuova Spesa</span></div>
-      <form id="expense-form" onsubmit="submitExpense(event)">
-        <input type="hidden" id="edit-id">
-        <div class="form-grid">
-          <div class="form-field">
-            <label>Data *</label>
-            <input type="date" id="f-date" required>
-          </div>
-          <div class="form-field">
-            <label>Categoria *</label>
-            <select id="f-category" required>
-              <option value="">— Seleziona —</option>
-              <option value="flight">✈️ Volo</option>
-              <option value="hotel">🏨 Hotel</option>
-              <option value="meal">🍽️ Pasto / Intrattenimento</option>
-              <option value="taxi">🚗 Taxi / Auto</option>
-              <option value="train">🚂 Treno</option>
-              <option value="parking">🅿️ Parcheggio</option>
-              <option value="phone">📱 Telefono / Internet</option>
-              <option value="conference">🎟️ Conference / Evento</option>
-              <option value="other">📦 Altro</option>
-            </select>
-          </div>
-          <div class="form-field full">
-            <label>Descrizione *</label>
-            <input type="text" id="f-desc" placeholder="es. Cena cliente Goldman Sachs" required maxlength="200">
-          </div>
-          <div class="form-field">
-            <label>Importo *</label>
-            <div class="amount-wrap">
-              <select id="f-currency">
-                <option value="EUR">EUR €</option>
-                <option value="USD">USD $</option>
-                <option value="GBP">GBP £</option>
-                <option value="CHF">CHF ₣</option>
-              </select>
-              <input type="number" id="f-amount" placeholder="0.00" step="0.01" min="0" required>
-            </div>
-          </div>
-          <div class="form-field">
-            <label>Progetto / Cliente</label>
-            <input type="text" id="f-client" placeholder="es. Deal XYZ / KPMG Milano">
-          </div>
-          <div class="form-field full">
-            <label>Ricevuta</label>
-            <div class="upload-area" onclick="document.getElementById('f-receipt').click()" id="upload-area">
-              <div class="upload-icon">📎</div>
-              <b style="font-size:13px;color:var(--gray-700)">Clicca per allegare ricevuta</b>
-              <p>JPG, PNG o PDF · max 5 MB</p>
-              <input type="file" id="f-receipt" accept="image/*,.pdf" onchange="handleReceiptUpload(this)">
-            </div>
-            <div id="receipt-preview-wrap" style="display:none" class="receipt-preview">
-              <img id="receipt-thumb" src="" alt="ricevuta">
-              <span class="receipt-name" id="receipt-fname">—</span>
-              <button type="button" class="remove-receipt" onclick="removeReceipt()">✕</button>
-            </div>
-          </div>
-          <div class="form-field full">
-            <label>Note</label>
-            <textarea id="f-notes" placeholder="Note aggiuntive (opzionale)..." rows="2"></textarea>
-          </div>
-          <div class="form-field full">
-            <div class="checkbox-field">
-              <input type="checkbox" id="f-reimbursable" checked>
-              <label for="f-reimbursable">✅ Spesa rimborsabile dall'azienda</label>
-            </div>
-          </div>
-        </div>
-        <div style="display:flex;gap:10px;margin-top:20px;justify-content:flex-end">
-          <button type="button" class="btn btn-ghost" onclick="resetForm()">🔄 Resetta</button>
-          <button type="submit" class="btn btn-primary" id="btn-submit-expense">➕ Aggiungi Spesa</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- ==================== LIST ==================== -->
-  <div id="section-list" class="section">
-    <div class="card" style="margin-bottom:16px">
-      <div class="filter-bar">
-        <div style="display:flex;flex-direction:column;gap:2px">
-          <label>Da</label>
-          <input type="date" id="fl-from" onchange="renderList()">
-        </div>
-        <div style="display:flex;flex-direction:column;gap:2px">
-          <label>A</label>
-          <input type="date" id="fl-to" onchange="renderList()">
-        </div>
-        <div style="display:flex;flex-direction:column;gap:2px">
-          <label>Categoria</label>
-          <select id="fl-cat" onchange="renderList()">
-            <option value="">Tutte</option>
-            <option value="flight">✈️ Volo</option>
-            <option value="hotel">🏨 Hotel</option>
-            <option value="meal">🍽️ Pasto</option>
-            <option value="taxi">🚗 Taxi</option>
-            <option value="train">🚂 Treno</option>
-            <option value="parking">🅿️ Parcheggio</option>
-            <option value="phone">📱 Telefono</option>
-            <option value="conference">🎟️ Conference</option>
-            <option value="other">📦 Altro</option>
-          </select>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:2px">
-          <label>Cliente/Progetto</label>
-          <input type="text" id="fl-client" placeholder="Cerca..." oninput="renderList()">
-        </div>
-        <button class="btn btn-ghost btn-sm" onclick="clearFilters()">✕ Resetta filtri</button>
-        <button class="btn btn-primary btn-sm" style="margin-left:auto" onclick="exportSelected()">⬇️ Export selezionati</button>
-      </div>
-      <div class="select-all-wrap">
-        <input type="checkbox" id="chk-all" onchange="toggleSelectAll(this)">
-        <label for="chk-all" style="cursor:pointer">Seleziona tutto</label>
-        <span id="selected-count" style="color:var(--blue);font-weight:700"></span>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="table-wrap">
-        <table id="expense-table">
-          <thead>
-            <tr>
-              <th style="width:36px"></th>
-              <th onclick="sortBy('date')">Data <span class="sort-icon" id="sort-date">↕</span></th>
-              <th onclick="sortBy('category')">Categoria <span class="sort-icon" id="sort-category">↕</span></th>
-              <th onclick="sortBy('desc')">Descrizione <span class="sort-icon" id="sort-desc">↕</span></th>
-              <th onclick="sortBy('client')">Cliente/Progetto <span class="sort-icon" id="sort-client">↕</span></th>
-              <th onclick="sortBy('amount')" style="text-align:right">Importo <span class="sort-icon" id="sort-amount">↕</span></th>
-              <th>Ricevuta</th>
-              <th>Rimbors.</th>
-              <th>Azioni</th>
-            </tr>
-          </thead>
-          <tbody id="expense-tbody"></tbody>
-          <tfoot id="expense-tfoot"></tfoot>
-        </table>
-      </div>
-      <div id="list-empty" class="empty-state" style="display:none">
-        <div class="empty-icon">📭</div>
-        <p>Nessuna spesa trovata</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==================== REPORT ==================== -->
-  <div id="section-report" class="section">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-      <div class="card">
-        <div class="card-title"><span class="icon">📄</span> Dati Nota Spese</div>
-        <div class="form-grid" style="grid-template-columns:1fr">
-          <div class="form-field">
-            <label>Nome Dipendente *</label>
-            <input type="text" id="r-name" placeholder="es. Marco Rossi" value="">
-          </div>
-          <div class="form-field">
-            <label>Azienda</label>
-            <input type="text" id="r-company" placeholder="es. Acme Advisory S.r.l." value="">
-          </div>
-          <div class="form-field">
-            <label>Periodo Da</label>
-            <input type="date" id="r-from">
-          </div>
-          <div class="form-field">
-            <label>Periodo A</label>
-            <input type="date" id="r-to">
-          </div>
-          <div class="form-field">
-            <label>Numero Nota Spese</label>
-            <input type="text" id="r-nsnum" value="NS-2026-001">
-          </div>
-          <div class="form-field">
-            <label>Filtro Cliente/Progetto</label>
-            <input type="text" id="r-client" placeholder="Lascia vuoto per tutte">
-          </div>
-          <div class="checkbox-field">
-            <input type="checkbox" id="r-only-reimb" checked>
-            <label for="r-only-reimb">Solo spese rimborsabili</label>
-          </div>
-          <div class="checkbox-field">
-            <input type="checkbox" id="r-include-receipts" checked>
-            <label for="r-include-receipts">Allega thumbnail ricevute</label>
-          </div>
-        </div>
-        <div style="margin-top:20px">
-          <button class="btn-cta" onclick="generatePDF()">🖨️ Genera PDF / Stampa</button>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-title"><span class="icon">👁️</span> Anteprima</div>
-        <div class="report-preview" id="report-preview">
-          <p style="color:var(--gray-400);text-align:center;padding:20px 0">Compila i dati per vedere l'anteprima</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</main>
-
-<!-- MODAL: image viewer -->
-<div class="modal-overlay hidden" id="img-modal" onclick="closeImgModal(event)">
-  <div class="modal" style="max-width:700px">
-    <div class="modal-header">
-      <h3>📎 Ricevuta</h3>
-      <button class="modal-close" onclick="closeImgModal()">✕</button>
-    </div>
-    <div class="modal-body" style="text-align:center">
-      <img id="img-modal-img" src="" style="max-width:100%;max-height:70vh;border-radius:var(--radius)">
-    </div>
-  </div>
-</div>
-
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
-
-<!-- PRINT AREA (hidden, populated by JS) -->
-<div id="print-area" style="display:none"></div>
-
 
 <script>
 // ============================================================
-// STATE & STORAGE
+// DATA MODEL & STATE
 // ============================================================
-const STORAGE_KEY = 'expense_tracker_v1';
+const CATS = {
+  flight:     { label: 'Volo',              emoji: '✈️',  color: '#0ea5e9' },
+  hotel:      { label: 'Hotel',             emoji: '🏨',  color: '#8b5cf6' },
+  meal:       { label: 'Pasto',             emoji: '🍽️',  color: '#f59e0b' },
+  taxi:       { label: 'Taxi',              emoji: '🚗',  color: '#10b981' },
+  train:      { label: 'Treno',             emoji: '🚂',  color: '#6366f1' },
+  parking:    { label: 'Parcheggio',        emoji: '🅿️',  color: '#64748b' },
+  phone:      { label: 'Telefono',          emoji: '📱',  color: '#ec4899' },
+  conference: { label: 'Conference',        emoji: '🎟️',  color: '#f97316' },
+  other:      { label: 'Altro',             emoji: '📦',  color: '#94a3b8' }
+};
 
-const SAMPLE_DATA = [
-  { id: 1, date: '2026-05-28', category: 'flight', desc: 'Volo Milano-Londra (Heathrow)', client: 'Deal XYZ - HSBC London', amount: 387.50, currency: 'EUR', reimbursable: true, notes: 'Economy class', receipt: null, receiptName: null },
-  { id: 2, date: '2026-05-28', category: 'hotel', desc: 'Marriott Canary Wharf - 2 notti', client: 'Deal XYZ - HSBC London', amount: 520.00, currency: 'EUR', reimbursable: true, notes: '', receipt: null, receiptName: null },
-  { id: 3, date: '2026-05-29', category: 'meal', desc: 'Cena con management team cliente', client: 'Deal XYZ - HSBC London', amount: 284.00, currency: 'GBP', reimbursable: true, notes: '4 persone', receipt: null, receiptName: null },
-  { id: 4, date: '2026-05-29', category: 'taxi', desc: 'Taxi Heathrow → City', client: 'Deal XYZ - HSBC London', amount: 67.00, currency: 'GBP', reimbursable: true, notes: '', receipt: null, receiptName: null },
-  { id: 5, date: '2026-05-30', category: 'conference', desc: 'Reuters Financial Summit 2026', client: 'Business Development', amount: 450.00, currency: 'EUR', reimbursable: true, notes: '', receipt: null, receiptName: null },
-  { id: 6, date: '2026-05-30', category: 'phone', desc: 'Roaming dati UK', client: 'Deal XYZ - HSBC London', amount: 15.00, currency: 'EUR', reimbursable: true, notes: '', receipt: null, receiptName: null }
+const CURRENCY_SYMBOLS = { EUR:'€', USD:'$', GBP:'£', CHF:'₣' };
+
+const SAMPLE_EXPENSES = [
+  { id:'s1', date:'2026-05-29', category:'meal',  desc:'Cena cliente HSBC', client:'Deal XYZ', amount:284, currency:'GBP', reimbursable:true,  receipt:'' },
+  { id:'s2', date:'2026-05-28', category:'taxi',  desc:'Taxi aeroporto→hotel', client:'Deal XYZ', amount:45.50, currency:'EUR', reimbursable:true,  receipt:'' },
+  { id:'s3', date:'2026-05-27', category:'hotel', desc:'Hotel Marriott Londra', client:'Deal XYZ', amount:320, currency:'GBP', reimbursable:true,  receipt:'' },
+  { id:'s4', date:'2026-05-26', category:'flight',desc:'Volo MXP-LHR A/R', client:'Deal XYZ', amount:412, currency:'EUR', reimbursable:true,  receipt:'' },
+  { id:'s5', date:'2026-05-24', category:'meal',  desc:'Pranzo di lavoro', client:'Progetto Alpha', amount:68, currency:'EUR', reimbursable:true,  receipt:'' },
+  { id:'s6', date:'2026-05-20', category:'train', desc:'Treno Milano-Roma', client:'Progetto Alpha', amount:89, currency:'EUR', reimbursable:false, receipt:'' },
+  { id:'s7', date:'2026-05-15', category:'phone', desc:'Roaming internazionale', client:'', amount:32.50, currency:'EUR', reimbursable:false, receipt:'' }
 ];
 
-let state = { expenses: [], settings: { nsNum: 'NS-2026-001', status: 'draft', nextId: 7 } };
-let currentPeriod = 'month';
-let currentReceipt = null;
-let currentReceiptName = null;
-let sortField = 'date';
-let sortDir = -1; // -1 = desc
-let selectedIds = new Set();
+let state = {
+  expenses: [],
+  settings: { name:'', company:'', nsNum:'' }
+};
 
-function saveData() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
-}
-function loadData() {
+function loadState() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch(e) {}
-  return null;
+    const saved = localStorage.getItem('sf_expenses_v2');
+    if (saved) { state.expenses = JSON.parse(saved); }
+    else { state.expenses = JSON.parse(JSON.stringify(SAMPLE_EXPENSES)); saveState(); }
+  } catch(e) { state.expenses = JSON.parse(JSON.stringify(SAMPLE_EXPENSES)); }
+}
+
+function saveState() {
+  localStorage.setItem('sf_expenses_v2', JSON.stringify(state.expenses));
 }
 
 // ============================================================
-// INIT
+// HELPERS
 // ============================================================
-document.addEventListener('DOMContentLoaded', () => {
-  const saved = loadData();
-  if (saved && saved.expenses && saved.expenses.length > 0) {
-    state = saved;
-  } else {
-    state.expenses = SAMPLE_DATA.map(e => ({...e}));
-    saveData();
-  }
-  // Set today's date in form
-  document.getElementById('f-date').value = today();
-  // Period
-  setPeriodDates('month');
-  updateDashboard();
-  renderList();
-  updateReportPreview();
-  updateHeaderStatus();
-  // Report form live update
-  ['r-name','r-company','r-from','r-to','r-nsnum','r-client','r-only-reimb','r-include-receipts'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener('change', updateReportPreview);
-    if (el && el.tagName==='INPUT' && el.type==='text') el.addEventListener('input', updateReportPreview);
-  });
-});
+function today() { return new Date().toISOString().split('T')[0]; }
+function yesterday() { const d=new Date(); d.setDate(d.getDate()-1); return d.toISOString().split('T')[0]; }
 
-function today() {
-  return new Date().toISOString().split('T')[0];
+function fmtAmount(amount, currency) {
+  const sym = CURRENCY_SYMBOLS[currency] || currency;
+  return sym + ' ' + Number(amount).toLocaleString('it-IT', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function fmtDate(d) {
+  return new Date(d + 'T12:00:00').toLocaleDateString('it-IT', {day:'numeric', month:'short', year:'numeric'});
+}
+
+function esc(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function uid() { return 'e' + Date.now() + Math.random().toString(36).slice(2,7); }
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + (type||'');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 3000);
 }
 
 // ============================================================
 // NAVIGATION
 // ============================================================
-function switchSection(name) {
+function showSection(name, btn) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('section-' + name).classList.add('active');
-  document.querySelector('[data-section="' + name + '"]').classList.add('active');
-  if (name === 'list') renderList();
-  if (name === 'dashboard') updateDashboard();
-  if (name === 'report') updateReportPreview();
-  if (name === 'add') { resetForm(); document.getElementById('f-date').value = today(); }
+  if (btn) btn.classList.add('active');
+  if (name === 'list')   { renderList(); }
+  if (name === 'home')   { updateDashboard(); }
+  if (name === 'report') { updateReportPreview(); }
+  if (name === 'add')    { resetForm(); }
 }
 
 // ============================================================
-// PERIOD
+// BUILD CATEGORY GRID
 // ============================================================
-function setPeriodDates(mode) {
-  const now = new Date();
-  let from, to;
-  to = today();
-  if (mode === 'week') {
-    const d = new Date(); d.setDate(d.getDate() - 6);
-    from = d.toISOString().split('T')[0];
-  } else if (mode === 'month') {
-    from = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-01';
-  } else if (mode === 'all') {
-    from = '2000-01-01'; to = '2099-12-31';
-  }
-  document.getElementById('period-from').value = from || '';
-  document.getElementById('period-to').value = to;
+function buildCatGrid() {
+  const grid = document.getElementById('cat-grid');
+  grid.innerHTML = Object.entries(CATS).map(([key, cat]) =>
+    `<div class="cat-pill" data-cat="${key}" onclick="selectCat(this,'${key}')"
+      style="--cc:${cat.color}">
+      <span class="cat-emoji">${cat.emoji}</span>
+      <span class="cat-name">${cat.label}</span>
+    </div>`
+  ).join('');
 }
 
-function setPeriod(mode, btn) {
-  currentPeriod = mode;
-  if (btn) {
-    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  }
-  if (mode !== 'custom') setPeriodDates(mode);
-  updateDashboard();
-}
-
-function getPeriodRange() {
-  return {
-    from: document.getElementById('period-from').value || '2000-01-01',
-    to: document.getElementById('period-to').value || '2099-12-31'
+function selectCat(el, key) {
+  document.querySelectorAll('.cat-pill').forEach(p => {
+    p.classList.remove('active');
+    p.style.background = '';
+    p.style.borderColor = '';
+  });
+  el.classList.add('active');
+  el.style.background = CATS[key].color;
+  el.style.borderColor = CATS[key].color;
+  // Update description placeholder
+  const placeholders = {
+    flight:'Volo + compagnia aerea', hotel:'Nome hotel e città', meal:'Ristorante / cena con cliente',
+    taxi:'Tratta percorsa', train:'Tratta percorsa', parking:'Luogo e durata',
+    phone:'Servizio / operatore', conference:'Nome evento', other:'Descrizione...'
   };
+  document.getElementById('f-desc').placeholder = placeholders[key] || 'Descrivi la spesa...';
 }
 
 // ============================================================
-// CATEGORIES
+// CURRENCY & DATE PILLS
 // ============================================================
-const CATS = {
-  flight:     { label: 'Volo',               emoji: '✈️', color: '#2563eb' },
-  hotel:      { label: 'Hotel',              emoji: '🏨', color: '#7c3aed' },
-  meal:       { label: 'Pasto/Intratten.',   emoji: '🍽️', color: '#d97706' },
-  taxi:       { label: 'Taxi/Auto',          emoji: '🚗', color: '#0891b2' },
-  train:      { label: 'Treno',              emoji: '🚂', color: '#059669' },
-  parking:    { label: 'Parcheggio',         emoji: '🅿️', color: '#64748b' },
-  phone:      { label: 'Telefono/Internet',  emoji: '📱', color: '#db2777' },
-  conference: { label: 'Conference/Evento',  emoji: '🎟️', color: '#ea580c' },
-  other:      { label: 'Altro',              emoji: '📦', color: '#6b7280' }
-};
+let selectedCurrency = 'EUR';
+function setCurrency(el, cur, sym) {
+  selectedCurrency = cur;
+  document.querySelectorAll('#currency-pills .pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('currency-prefix').textContent = sym;
+}
 
-function catLabel(cat) {
-  return CATS[cat] ? CATS[cat].emoji + ' ' + CATS[cat].label : cat;
+let selectedDateMode = 'today';
+function setDateMode(el, mode) {
+  selectedDateMode = mode;
+  document.querySelectorAll('#date-pills .pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('custom-date-wrap').style.display = mode === 'custom' ? 'block' : 'none';
+  if (mode === 'today') document.getElementById('f-date').value = today();
+  if (mode === 'yesterday') document.getElementById('f-date').value = yesterday();
 }
 
 // ============================================================
-// CURRENCY
+// FORM RESET
 // ============================================================
-function currencySymbol(c) {
-  return { EUR:'€', USD:'$', GBP:'£', CHF:'₣' }[c] || c;
+function resetForm() {
+  document.getElementById('f-amount').value = '';
+  document.getElementById('f-desc').value = '';
+  document.getElementById('f-client').value = '';
+  document.getElementById('f-reimb').checked = true;
+  document.getElementById('f-date').value = today();
+  // Reset currency to EUR
+  document.querySelectorAll('#currency-pills .pill').forEach(p => p.classList.remove('active'));
+  document.querySelector('#currency-pills .pill[data-cur="EUR"]').classList.add('active');
+  document.getElementById('currency-prefix').textContent = '€';
+  selectedCurrency = 'EUR';
+  // Reset date pills
+  document.querySelectorAll('#date-pills .pill').forEach(p => p.classList.remove('active'));
+  document.querySelector('#date-pills .pill[data-dmode="today"]').classList.add('active');
+  document.getElementById('custom-date-wrap').style.display = 'none';
+  selectedDateMode = 'today';
+  // Reset cat
+  document.querySelectorAll('.cat-pill').forEach(p => {
+    p.classList.remove('active'); p.style.background=''; p.style.borderColor='';
+  });
+  // Reset receipt
+  document.getElementById('f-receipt').value = '';
+  document.getElementById('receipt-preview').style.display = 'none';
+  document.getElementById('receipt-img').src = '';
+  window._receiptBase64 = '';
+  // Refresh client suggestions
+  const clients = [...new Set(state.expenses.map(e => e.client).filter(Boolean))];
+  document.getElementById('client-suggestions').innerHTML = clients.map(c => `<option value="${esc(c)}">`).join('');
 }
-function fmtAmount(amount, currency) {
-  return currencySymbol(currency) + ' ' + parseFloat(amount).toFixed(2);
+
+// ============================================================
+// RECEIPT UPLOAD
+// ============================================================
+window._receiptBase64 = '';
+
+document.addEventListener('DOMContentLoaded', function() {
+  const drop = document.getElementById('receipt-drop');
+  const input = document.getElementById('f-receipt');
+
+  input.addEventListener('change', function() {
+    if (this.files[0]) handleFile(this.files[0]);
+  });
+
+  drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('drag'); });
+  drop.addEventListener('dragleave', () => drop.classList.remove('drag'));
+  drop.addEventListener('drop', e => {
+    e.preventDefault(); drop.classList.remove('drag');
+    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+
+  function handleFile(file) {
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      window._receiptBase64 = ev.target.result;
+      if (file.type.startsWith('image/')) {
+        document.getElementById('receipt-img').src = ev.target.result;
+        document.getElementById('receipt-preview').style.display = 'block';
+      } else {
+        document.getElementById('receipt-preview').style.display = 'none';
+      }
+      showToast('Ricevuta caricata ✓', 'success');
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// ============================================================
+// SAVE EXPENSE
+// ============================================================
+function saveExpense() {
+  const amountRaw = parseFloat(document.getElementById('f-amount').value);
+  if (!amountRaw || amountRaw <= 0) {
+    showToast('Inserisci un importo valido', 'error');
+    document.getElementById('f-amount').focus();
+    return;
+  }
+  const activeCat = document.querySelector('.cat-pill.active');
+  if (!activeCat) {
+    showToast('Seleziona una categoria', 'error');
+    return;
+  }
+  const dateVal = selectedDateMode === 'today' ? today()
+    : selectedDateMode === 'yesterday' ? yesterday()
+    : document.getElementById('f-date').value;
+  if (!dateVal) { showToast('Seleziona una data', 'error'); return; }
+
+  const exp = {
+    id: uid(),
+    date: dateVal,
+    category: activeCat.dataset.cat,
+    desc: document.getElementById('f-desc').value.trim() || CATS[activeCat.dataset.cat].label,
+    client: document.getElementById('f-client').value.trim(),
+    amount: amountRaw,
+    currency: selectedCurrency,
+    reimbursable: document.getElementById('f-reimb').checked,
+    receipt: window._receiptBase64 || ''
+  };
+
+  state.expenses.unshift(exp);
+  saveState();
+  updateDashboard();
+  updateHeaderTotal();
+  showToast('Spesa salvata ✓', 'success');
+  showSection('list', document.querySelector('[data-section="list"]'));
 }
 
 // ============================================================
 // FILTER EXPENSES
 // ============================================================
-function filterExpenses(opts) {
-  opts = opts || {};
-  let list = state.expenses;
-  const from = opts.from || '2000-01-01';
-  const to = opts.to || '2099-12-31';
-  list = list.filter(e => e.date >= from && e.date <= to);
-  if (opts.category) list = list.filter(e => e.category === opts.category);
-  if (opts.client) list = list.filter(e => (e.client||'').toLowerCase().includes(opts.client.toLowerCase()) || (e.desc||'').toLowerCase().includes(opts.client.toLowerCase()));
-  if (opts.onlyReimb) list = list.filter(e => e.reimbursable);
-  return list;
-}
+let listFilter = 'all';
+let listCatFilter = 'all';
 
-// ============================================================
-// DASHBOARD
-// ============================================================
-function updateDashboard() {
-  const { from, to } = getPeriodRange();
-  const list = filterExpenses({ from, to });
-
-  // EUR-only for totals (simplified — show as-is, different currencies labelled)
-  const total = list.reduce((s,e) => s + (e.currency === 'EUR' ? e.amount : 0), 0);
-  const totalAll = list.reduce((s,e) => s + e.amount, 0); // raw sum, mixed currency
-  const reimb = list.filter(e => e.reimbursable);
-  const noReimb = list.filter(e => !e.reimbursable);
-  const reimbTotal = reimb.reduce((s,e) => s + (e.currency === 'EUR' ? e.amount : 0), 0);
-  const noReimbTotal = noReimb.reduce((s,e) => s + (e.currency === 'EUR' ? e.amount : 0), 0);
-  const receipts = list.filter(e => e.receipt).length;
-
-  document.getElementById('stat-total').textContent = '€ ' + totalAll.toFixed(2);
-  document.getElementById('stat-count').textContent = list.length + ' voci';
-  document.getElementById('stat-reimb').textContent = '€ ' + reimbTotal.toFixed(2);
-  document.getElementById('stat-reimb-count').textContent = reimb.length + ' voci';
-  document.getElementById('stat-noreimb').textContent = '€ ' + noReimbTotal.toFixed(2);
-  document.getElementById('stat-noreimb-count').textContent = noReimb.length + ' voci';
-  document.getElementById('stat-receipts').textContent = receipts;
-  document.getElementById('dash-count2').textContent = state.expenses.length;
-
-  // Category chart
-  const catTotals = {};
-  list.forEach(e => {
-    catTotals[e.category] = (catTotals[e.category] || 0) + e.amount;
+function filterExpenses({ from, to, client, onlyReimb, catKey } = {}) {
+  return state.expenses.filter(e => {
+    if (from && e.date < from) return false;
+    if (to && e.date > to) return false;
+    if (client && e.client.toLowerCase().indexOf(client.toLowerCase()) < 0) return false;
+    if (onlyReimb && !e.reimbursable) return false;
+    if (catKey && catKey !== 'all' && e.category !== catKey) return false;
+    return true;
   });
-  const maxVal = Math.max(...Object.values(catTotals), 1);
-  const chartEl = document.getElementById('cat-chart');
-  if (Object.keys(catTotals).length === 0) {
-    chartEl.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div><p>Nessuna spesa nel periodo</p></div>';
-  } else {
-    const sorted = Object.entries(catTotals).sort((a,b) => b[1]-a[1]);
-    chartEl.innerHTML = sorted.map(([cat, val]) => {
-      const c = CATS[cat] || { emoji:'📦', label: cat, color:'#6b7280' };
-      const pct = Math.round((val / maxVal) * 100);
-      return `<div class="chart-row">
-        <div class="cat-label">${c.emoji} ${c.label}</div>
-        <div class="chart-bar-wrap"><div class="chart-bar" style="width:${pct}%;background:${c.color}"></div></div>
-        <div class="chart-val">${val.toFixed(2)}</div>
-      </div>`;
-    }).join('');
+}
+
+function getFilterDates(filter) {
+  const now = new Date();
+  if (filter === 'week') {
+    const d = new Date(); d.setDate(d.getDate() - 6);
+    return { from: d.toISOString().split('T')[0], to: today() };
   }
-}
-
-function updateHeaderStatus() {
-  const s = state.settings.status || 'draft';
-  const html = s === 'ready'
-    ? '<span class="badge ready">✅ Pronta per invio</span>'
-    : '<span class="badge draft">📝 Bozza</span>';
-  document.getElementById('hdr-status').outerHTML.replace;
-  document.getElementById('hdr-status').className = 'badge ' + (s === 'ready' ? 'ready' : 'draft');
-  document.getElementById('hdr-status').textContent = s === 'ready' ? '✅ Pronta per invio' : '📝 Bozza';
-  document.getElementById('dash-status').className = 'badge ' + (s === 'ready' ? 'ready' : 'draft');
-  document.getElementById('dash-status').textContent = s === 'ready' ? '✅ Pronta per invio' : '📝 Bozza';
-}
-
-function markReady() {
-  state.settings.status = state.settings.status === 'ready' ? 'draft' : 'ready';
-  saveData();
-  updateHeaderStatus();
-  document.getElementById('btn-mark-ready').textContent = state.settings.status === 'ready' ? '📝 Torna a Bozza' : '📝 Segna Pronta per Invio';
-  showToast(state.settings.status === 'ready' ? 'Nota spese pronta per l\'invio!' : 'Nota spese impostata come bozza', 'success');
+  if (filter === 'month') {
+    return { from: now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-01', to: today() };
+  }
+  return { from: '2000-01-01', to: '2099-12-31' };
 }
 
 // ============================================================
-// FORM
+// RENDER LIST
 // ============================================================
-function resetForm() {
-  document.getElementById('edit-id').value = '';
-  document.getElementById('expense-form').reset();
-  document.getElementById('form-title').textContent = 'Nuova Spesa';
-  document.getElementById('btn-submit-expense').textContent = '➕ Aggiungi Spesa';
-  document.getElementById('f-date').value = today();
-  document.getElementById('f-reimbursable').checked = true;
-  currentReceipt = null;
-  currentReceiptName = null;
-  document.getElementById('receipt-preview-wrap').style.display = 'none';
-  document.getElementById('upload-area').style.display = 'block';
-}
-
-function handleReceiptUpload(input) {
-  const file = input.files[0];
-  if (!file) return;
-  if (file.size > 5 * 1024 * 1024) { showToast('File troppo grande (max 5 MB)', 'error'); return; }
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    currentReceipt = ev.target.result;
-    currentReceiptName = file.name;
-    const isImg = file.type.startsWith('image/');
-    document.getElementById('receipt-thumb').src = isImg ? currentReceipt : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" fill="%23e5e7eb" rx="4"/><text y="26" x="8" font-size="16">📄</text></svg>';
-    document.getElementById('receipt-fname').textContent = file.name;
-    document.getElementById('receipt-preview-wrap').style.display = 'flex';
-    document.getElementById('upload-area').style.display = 'none';
-  };
-  reader.readAsDataURL(file);
-}
-
-function removeReceipt() {
-  currentReceipt = null;
-  currentReceiptName = null;
-  document.getElementById('receipt-preview-wrap').style.display = 'none';
-  document.getElementById('upload-area').style.display = 'block';
-  document.getElementById('f-receipt').value = '';
-}
-
-function submitExpense(e) {
-  e.preventDefault();
-  const editId = document.getElementById('edit-id').value;
-  const expense = {
-    id: editId ? parseInt(editId) : (state.settings.nextId++),
-    date: document.getElementById('f-date').value,
-    category: document.getElementById('f-category').value,
-    desc: document.getElementById('f-desc').value.trim(),
-    amount: parseFloat(document.getElementById('f-amount').value),
-    currency: document.getElementById('f-currency').value,
-    client: document.getElementById('f-client').value.trim(),
-    notes: document.getElementById('f-notes').value.trim(),
-    reimbursable: document.getElementById('f-reimbursable').checked,
-    receipt: currentReceipt,
-    receiptName: currentReceiptName
-  };
-  if (editId) {
-    const idx = state.expenses.findIndex(x => x.id === parseInt(editId));
-    if (idx >= 0) state.expenses[idx] = expense;
-    showToast('Spesa aggiornata!', 'success');
-  } else {
-    state.expenses.push(expense);
-    showToast('Spesa aggiunta!', 'success');
-  }
-  saveData();
-  resetForm();
-  updateDashboard();
+function setListFilter(el, filter) {
+  listFilter = filter;
+  document.querySelectorAll('#filter-chips .chip[data-filter]').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
   renderList();
-  switchSection('list');
+}
+
+function renderList() {
+  const { from, to } = getFilterDates(listFilter);
+  const expenses = filterExpenses({ from, to, catKey: listCatFilter }).sort((a,b) => b.date.localeCompare(a.date));
+  const container = document.getElementById('expense-list');
+  const empty = document.getElementById('list-empty');
+
+  if (expenses.length === 0) {
+    container.innerHTML = '';
+    empty.style.display = 'block';
+    document.getElementById('list-total').textContent = fmtAmount(0, 'EUR');
+    return;
+  }
+  empty.style.display = 'none';
+
+  // Group by date
+  const groups = {};
+  expenses.forEach(e => { if (!groups[e.date]) groups[e.date] = []; groups[e.date].push(e); });
+  const sortedDates = Object.keys(groups).sort((a,b) => b.localeCompare(a));
+
+  container.innerHTML = sortedDates.map(date => {
+    const label = date === today() ? '🗓️ Oggi' : date === yesterday() ? '🗓️ Ieri' : '🗓️ ' + fmtDate(date);
+    const cards = groups[date].map(e => renderExpenseCard(e)).join('');
+    return `<div style="margin-bottom:8px"><div style="font-size:.75rem;font-weight:700;color:var(--text-muted);padding:4px 0 8px;text-transform:uppercase;letter-spacing:.05em">${label}</div>${cards}</div>`;
+  }).join('');
+
+  // Total
+  const total = expenses.reduce((s, e) => s + (e.currency === 'EUR' ? e.amount : e.amount), 0);
+  document.getElementById('list-total').textContent = fmtAmount(total, 'EUR') + (expenses.some(e => e.currency !== 'EUR') ? '*' : '');
+}
+
+function renderExpenseCard(e) {
+  const cat = CATS[e.category] || CATS.other;
+  const hasReceipt = !!e.receipt;
+  return `<div class="expense-card" id="card-${e.id}">
+    <div class="ec-main">
+      <div class="ec-icon" style="background:${cat.color}22">${cat.emoji}</div>
+      <div class="ec-body">
+        <div class="ec-title">${esc(e.desc)}</div>
+        <div class="ec-meta">
+          <span>${fmtDate(e.date)}</span>
+          ${e.client ? `<span>· ${esc(e.client)}</span>` : ''}
+          <span class="ec-badge ${e.reimbursable ? '' : 'no'}">${e.reimbursable ? '✅ Rimb.' : '— Non rimb.'}</span>
+        </div>
+      </div>
+      <div class="ec-amount" style="color:${cat.color}">${fmtAmount(e.amount, e.currency)}</div>
+    </div>
+    <div class="ec-actions">
+      ${hasReceipt ? `<button class="ec-btn receipt-btn" onclick="showReceipt('${e.id}')">🖼️ Ricevuta</button>` : ''}
+      <button class="ec-btn" onclick="toggleDetails('${e.id}')">📋 Dettagli</button>
+      <button class="ec-btn" onclick="editExpense('${e.id}')">✏️ Modifica</button>
+      <button class="ec-btn del" onclick="deleteExpense('${e.id}')">🗑️ Elimina</button>
+    </div>
+    <div class="ec-details" id="det-${e.id}">
+      <p><b>Categoria:</b> ${cat.emoji} ${cat.label}</p>
+      <p><b>Data:</b> ${fmtDate(e.date)}</p>
+      ${e.client ? `<p><b>Cliente:</b> ${esc(e.client)}</p>` : ''}
+      <p><b>Valuta:</b> ${e.currency}</p>
+      <p><b>Rimborsabile:</b> ${e.reimbursable ? 'Sì' : 'No'}</p>
+    </div>
+  </div>`;
+}
+
+function toggleDetails(id) {
+  const det = document.getElementById('det-' + id);
+  det.classList.toggle('open');
+}
+
+function showReceipt(id) {
+  const e = state.expenses.find(x => x.id === id);
+  if (!e || !e.receipt) return;
+  const w = window.open('', '_blank');
+  if (w) {
+    w.document.write(`<html><body style="margin:0;background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh"><img src="${e.receipt}" style="max-width:100%;max-height:100vh;object-fit:contain"></body></html>`);
+    w.document.close();
+  }
+}
+
+// ============================================================
+// EDIT / DELETE
+// ============================================================
+function deleteExpense(id) {
+  const card = document.getElementById('card-' + id);
+  if (card) {
+    card.classList.add('removing');
+    setTimeout(() => {
+      state.expenses = state.expenses.filter(e => e.id !== id);
+      saveState();
+      renderList();
+      updateDashboard();
+      updateHeaderTotal();
+      showToast('Spesa eliminata', '');
+    }, 250);
+  }
 }
 
 function editExpense(id) {
   const e = state.expenses.find(x => x.id === id);
   if (!e) return;
-  switchSection('add');
-  document.getElementById('edit-id').value = e.id;
-  document.getElementById('f-date').value = e.date;
-  document.getElementById('f-category').value = e.category;
-  document.getElementById('f-desc').value = e.desc;
-  document.getElementById('f-amount').value = e.amount;
-  document.getElementById('f-currency').value = e.currency || 'EUR';
-  document.getElementById('f-client').value = e.client || '';
-  document.getElementById('f-notes').value = e.notes || '';
-  document.getElementById('f-reimbursable').checked = !!e.reimbursable;
-  currentReceipt = e.receipt || null;
-  currentReceiptName = e.receiptName || null;
-  if (currentReceipt) {
-    document.getElementById('receipt-thumb').src = currentReceipt;
-    document.getElementById('receipt-fname').textContent = currentReceiptName || 'ricevuta';
-    document.getElementById('receipt-preview-wrap').style.display = 'flex';
-    document.getElementById('upload-area').style.display = 'none';
-  }
-  document.getElementById('form-title').textContent = 'Modifica Spesa';
-  document.getElementById('btn-submit-expense').textContent = '💾 Salva Modifiche';
+  // Pre-fill add form and switch tab
+  showSection('add', document.querySelector('[data-section="add"]'));
+  setTimeout(() => {
+    resetForm();
+    document.getElementById('f-amount').value = e.amount;
+    document.getElementById('f-desc').value = e.desc;
+    document.getElementById('f-client').value = e.client || '';
+    document.getElementById('f-reimb').checked = e.reimbursable;
+    document.getElementById('f-date').value = e.date;
+    setCurrency(document.querySelector(`#currency-pills .pill[data-cur="${e.currency}"]`) || document.querySelector('#currency-pills .pill'), e.currency, CURRENCY_SYMBOLS[e.currency] || e.currency);
+    // Select category
+    const cp = document.querySelector(`.cat-pill[data-cat="${e.category}"]`);
+    if (cp) selectCat(cp, e.category);
+    // Store receipt
+    window._receiptBase64 = e.receipt || '';
+    if (e.receipt && e.receipt.startsWith('data:image')) {
+      document.getElementById('receipt-img').src = e.receipt;
+      document.getElementById('receipt-preview').style.display = 'block';
+    }
+    // Show custom date
+    if (e.date !== today() && e.date !== yesterday()) {
+      setDateMode(document.querySelector('#date-pills .pill[data-dmode="custom"]'), 'custom');
+    }
+    // Override save button to update
+    state._editId = id;
+  }, 50);
 }
 
-function deleteExpense(id) {
-  if (!confirm('Eliminare questa spesa?')) return;
-  state.expenses = state.expenses.filter(x => x.id !== id);
-  selectedIds.delete(id);
-  saveData();
-  renderList();
-  updateDashboard();
-  showToast('Spesa eliminata', 'error');
-}
+// Patch saveExpense to handle edits
+const _origSave = saveExpense;
+window.saveExpense = function() {
+  if (state._editId) {
+    const amountRaw = parseFloat(document.getElementById('f-amount').value);
+    if (!amountRaw || amountRaw <= 0) { showToast('Inserisci un importo valido','error'); return; }
+    const activeCat = document.querySelector('.cat-pill.active');
+    if (!activeCat) { showToast('Seleziona una categoria','error'); return; }
+    const dateVal = selectedDateMode === 'today' ? today() : selectedDateMode === 'yesterday' ? yesterday() : document.getElementById('f-date').value;
+    const idx = state.expenses.findIndex(x => x.id === state._editId);
+    if (idx >= 0) {
+      state.expenses[idx] = Object.assign(state.expenses[idx], {
+        date: dateVal, category: activeCat.dataset.cat,
+        desc: document.getElementById('f-desc').value.trim() || CATS[activeCat.dataset.cat].label,
+        client: document.getElementById('f-client').value.trim(),
+        amount: amountRaw, currency: selectedCurrency,
+        reimbursable: document.getElementById('f-reimb').checked,
+        receipt: window._receiptBase64 || state.expenses[idx].receipt
+      });
+    }
+    state._editId = null;
+    saveState(); updateDashboard(); updateHeaderTotal();
+    showToast('Spesa aggiornata ✓', 'success');
+    showSection('list', document.querySelector('[data-section="list"]'));
+  } else {
+    _origSave();
+  }
+};
 
 // ============================================================
-// LIST
+// DASHBOARD
 // ============================================================
-function getListFilters() {
-  return {
-    from: document.getElementById('fl-from').value || null,
-    to: document.getElementById('fl-to').value || null,
-    category: document.getElementById('fl-cat').value || null,
-    client: document.getElementById('fl-client').value || null
-  };
+function updateHeaderTotal() {
+  const { from, to } = getFilterDates('month');
+  const expenses = filterExpenses({ from, to });
+  const total = expenses.reduce((s,e) => s + e.amount, 0);
+  document.getElementById('hdr-total').textContent = fmtAmount(total, 'EUR');
 }
 
-function clearFilters() {
-  document.getElementById('fl-from').value = '';
-  document.getElementById('fl-to').value = '';
-  document.getElementById('fl-cat').value = '';
-  document.getElementById('fl-client').value = '';
-  renderList();
-}
+function updateDashboard() {
+  const { from, to } = getFilterDates('month');
+  const expenses = filterExpenses({ from, to });
+  const total = expenses.reduce((s,e) => s + e.amount, 0);
+  const reimb = expenses.filter(e => e.reimbursable).reduce((s,e) => s + e.amount, 0);
+  const avg = expenses.length ? total / expenses.length : 0;
+  const now = new Date();
+  const fromLabel = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-01';
 
-function sortBy(field) {
-  if (sortField === field) sortDir *= -1;
-  else { sortField = field; sortDir = 1; }
-  // Update icons
-  ['date','category','desc','client','amount'].forEach(f => {
-    const el = document.getElementById('sort-' + f);
-    if (el) { el.textContent = f === field ? (sortDir === 1 ? '↑' : '↓') : '↕'; }
-    const th = el ? el.parentElement : null;
-    if (th) th.classList.toggle('sorted', f === field);
-  });
-  renderList();
-}
+  document.getElementById('dash-total').textContent = fmtAmount(total, 'EUR');
+  document.getElementById('dash-period-range').textContent = fmtDate(fromLabel) + ' → ' + fmtDate(today());
+  document.getElementById('dash-count').textContent = expenses.length;
+  document.getElementById('dash-avg').textContent = fmtAmount(avg, 'EUR').replace('€ ','€');
+  document.getElementById('dash-reimb').textContent = fmtAmount(reimb, 'EUR').replace('€ ','€');
 
-function renderList() {
-  const f = getListFilters();
-  let list = filterExpenses({ from: f.from, to: f.to, category: f.category, client: f.client });
-
-  // Sort
-  list = [...list].sort((a, b) => {
-    let av = a[sortField === 'desc' ? 'desc' : sortField] || '';
-    let bv = b[sortField === 'desc' ? 'desc' : sortField] || '';
-    if (sortField === 'amount') { av = parseFloat(av); bv = parseFloat(bv); }
-    if (av < bv) return -1 * sortDir;
-    if (av > bv) return 1 * sortDir;
-    return 0;
-  });
-
-  const tbody = document.getElementById('expense-tbody');
-  const tfoot = document.getElementById('expense-tfoot');
-  const emptyEl = document.getElementById('list-empty');
-
-  if (list.length === 0) {
-    tbody.innerHTML = '';
-    tfoot.innerHTML = '';
-    emptyEl.style.display = 'block';
-    return;
+  // Category breakdown
+  const catTotals = {};
+  expenses.forEach(e => { catTotals[e.category] = (catTotals[e.category]||0) + e.amount; });
+  const sorted = Object.entries(catTotals).sort((a,b) => b[1]-a[1]);
+  const bd = document.getElementById('cat-breakdown');
+  if (sorted.length === 0) { bd.innerHTML = '<p style="color:var(--text-muted);font-size:.85rem">Nessuna spesa questo mese</p>'; }
+  else {
+    const max = sorted[0][1];
+    bd.innerHTML = sorted.map(([key, val]) => {
+      const cat = CATS[key] || CATS.other;
+      const pct = max > 0 ? Math.round(val/total*100) : 0;
+      return `<div class="cat-row">
+        <span class="cr-emoji">${cat.emoji}</span>
+        <span class="cr-label">${cat.label}</span>
+        <div class="cr-bar-wrap"><div class="cr-bar" style="width:${pct}%;background:${cat.color}"></div></div>
+        <span class="cr-pct">${pct}%</span>
+      </div>`;
+    }).join('');
   }
-  emptyEl.style.display = 'none';
 
-  tbody.innerHTML = list.map(e => {
-    const sel = selectedIds.has(e.id);
-    const receiptHtml = e.receipt
-      ? `<img src="${e.receipt}" class="receipt-thumb" onclick="openImgModal('${e.id}')" title="Visualizza ricevuta">`
-      : `<span class="no-receipt" title="Nessuna ricevuta">—</span>`;
-    return `<tr class="${sel ? 'selected' : ''}">
-      <td><input type="checkbox" ${sel ? 'checked' : ''} onchange="toggleSelect(${e.id}, this)"></td>
-      <td>${e.date}</td>
-      <td><span title="${catLabel(e.category)}">${CATS[e.category] ? CATS[e.category].emoji + ' ' + CATS[e.category].label : e.category}</span></td>
-      <td><span style="font-weight:600">${esc(e.desc)}</span>${e.notes ? '<br><span style="font-size:11px;color:var(--gray-400)">' + esc(e.notes) + '</span>' : ''}</td>
-      <td><span style="font-size:12px;color:var(--gray-500)">${esc(e.client||'—')}</span></td>
-      <td class="amount">${fmtAmount(e.amount, e.currency||'EUR')}</td>
-      <td>${receiptHtml}</td>
-      <td><span class="badge ${e.reimbursable ? 'reimb-yes' : 'reimb-no'}">${e.reimbursable ? '✅ Sì' : '✗ No'}</span></td>
-      <td style="white-space:nowrap">
-        <button class="btn btn-ghost btn-icon btn-sm" onclick="editExpense(${e.id})" title="Modifica">✏️</button>
-        <button class="btn btn-icon btn-sm" style="background:var(--red-light);color:var(--red)" onclick="deleteExpense(${e.id})" title="Elimina">🗑️</button>
-      </td>
-    </tr>`;
+  // Recent list
+  const recent = [...state.expenses].sort((a,b) => b.date.localeCompare(a.date)).slice(0,3);
+  const rl = document.getElementById('recent-list');
+  if (recent.length === 0) { rl.innerHTML = '<p style="color:var(--text-muted);font-size:.85rem">Nessuna spesa ancora</p>'; return; }
+  rl.innerHTML = recent.map(e => {
+    const cat = CATS[e.category] || CATS.other;
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="showSection('list',document.querySelector('[data-section=list]'))">
+      <div style="width:38px;height:38px;border-radius:10px;background:${cat.color}22;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">${cat.emoji}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.88rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(e.desc)}</div>
+        <div style="font-size:.75rem;color:var(--text-muted)">${fmtDate(e.date)}${e.client?' · '+esc(e.client):''}</div>
+      </div>
+      <div style="font-weight:800;color:${cat.color};font-size:.95rem">${fmtAmount(e.amount,e.currency)}</div>
+    </div>`;
   }).join('');
 
-  // Footer totals by category
-  const catTotals = {};
-  list.forEach(e => {
-    const key = e.currency || 'EUR';
-    catTotals[key] = (catTotals[key] || 0) + e.amount;
-  });
-  const grandParts = Object.entries(catTotals).map(([c,v]) => currencySymbol(c) + ' ' + v.toFixed(2)).join(' + ');
-  tfoot.innerHTML = `<tr>
-    <td colspan="5" style="text-align:right;font-weight:700">Totale (${list.length} voci)</td>
-    <td class="amount" style="color:var(--blue)">${grandParts}</td>
-    <td colspan="3"></td>
-  </tr>`;
-}
-
-function toggleSelect(id, cb) {
-  if (cb.checked) selectedIds.add(id);
-  else selectedIds.delete(id);
-  updateSelCount();
-  renderList();
-}
-
-function toggleSelectAll(cb) {
-  const f = getListFilters();
-  const list = filterExpenses({ from: f.from, to: f.to, category: f.category, client: f.client });
-  if (cb.checked) list.forEach(e => selectedIds.add(e.id));
-  else list.forEach(e => selectedIds.delete(e.id));
-  updateSelCount();
-  renderList();
-}
-
-function updateSelCount() {
-  const el = document.getElementById('selected-count');
-  if (selectedIds.size > 0) el.textContent = selectedIds.size + ' selezionate';
-  else el.textContent = '';
-}
-
-function exportSelected() {
-  const ids = [...selectedIds];
-  const rows = ids.length > 0
-    ? state.expenses.filter(e => ids.includes(e.id))
-    : state.expenses;
-  if (rows.length === 0) { showToast('Nessuna spesa da esportare', 'error'); return; }
-  const header = 'Data,Categoria,Descrizione,Cliente,Importo,Valuta,Rimborsabile,Note\n';
-  const csv = rows.map(e =>
-    [e.date, catLabel(e.category), '"'+e.desc+'"', '"'+(e.client||'')+'"', e.amount, e.currency||'EUR', e.reimbursable?'Sì':'No', '"'+(e.notes||'')+'"'].join(',')
-  ).join('\n');
-  const blob = new Blob([header + csv], { type: 'text/csv' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'expense_export.csv';
-  a.click();
-  showToast('Export CSV scaricato!', 'success');
+  updateHeaderTotal();
 }
 
 // ============================================================
-// IMAGE MODAL
+// REPORT
 // ============================================================
-function openImgModal(id) {
-  const e = state.expenses.find(x => x.id === parseInt(id));
-  if (!e || !e.receipt) return;
-  document.getElementById('img-modal-img').src = e.receipt;
-  document.getElementById('img-modal').classList.remove('hidden');
-}
-function closeImgModal(ev) {
-  if (!ev || ev.target === document.getElementById('img-modal') || ev.currentTarget !== ev.target) {
-    document.getElementById('img-modal').classList.add('hidden');
-  }
+let reportPeriod = 'week';
+
+function setReportPeriod(el, mode) {
+  reportPeriod = mode;
+  document.querySelectorAll('[data-rp]').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  const customDates = document.getElementById('r-custom-dates');
+  customDates.style.display = mode === 'custom' ? 'flex' : 'none';
+  updateReportPreview();
 }
 
-// ============================================================
-// REPORT PREVIEW
-// ============================================================
 function updateReportPreview() {
-  const name = document.getElementById('r-name').value || '—';
-  const company = document.getElementById('r-company').value || '—';
-  const from = document.getElementById('r-from').value || '—';
-  const to = document.getElementById('r-to').value || '—';
-  const nsNum = document.getElementById('r-nsnum').value || 'NS-2026-001';
-  const clientF = document.getElementById('r-client').value;
+  const { from, to } = reportPeriod === 'custom' ? {
+    from: document.getElementById('r-from').value || '2000-01-01',
+    to: document.getElementById('r-to').value || '2099-12-31'
+  } : getFilterDates(reportPeriod);
+
   const onlyReimb = document.getElementById('r-only-reimb').checked;
-  const list = filterExpenses({
-    from: document.getElementById('r-from').value || null,
-    to: document.getElementById('r-to').value || null,
-    client: clientF || null,
-    onlyReimb
-  });
-  const total = list.reduce((s,e) => s + e.amount, 0);
-  document.getElementById('report-preview').innerHTML = `
-    <div style="display:flex;flex-direction:column;gap:8px">
-      <div style="display:flex;justify-content:space-between"><span>Dipendente</span><b>${esc(name)}</b></div>
-      <div style="display:flex;justify-content:space-between"><span>Azienda</span><b>${esc(company)}</b></div>
-      <div style="display:flex;justify-content:space-between"><span>Periodo</span><b>${from} → ${to}</b></div>
-      <div style="display:flex;justify-content:space-between"><span>N. Nota Spese</span><b>${esc(nsNum)}</b></div>
-      <div style="display:flex;justify-content:space-between"><span>Voci incluse</span><b>${list.length}</b></div>
-      <div style="display:flex;justify-content:space-between;font-size:15px;padding-top:8px;border-top:1px solid var(--gray-200)"><span style="font-weight:700">Totale</span><b style="color:var(--blue);font-size:16px">${total.toFixed(2)}</b></div>
-    </div>`;
+  const client = document.getElementById('r-client') ? document.getElementById('r-client').value : '';
+  const expenses = filterExpenses({ from, to, client: client||null, onlyReimb });
+  const total = expenses.reduce((s,e) => s + e.amount, 0);
+  document.getElementById('r-preview-amount').textContent = fmtAmount(total, 'EUR');
+  document.getElementById('r-preview-sub').textContent = expenses.length + ' spese nel periodo';
 }
 
-// ============================================================
-// PDF GENERATION
-// ============================================================
 function generatePDF() {
   const name = document.getElementById('r-name').value;
+  if (!name) { showToast('Inserisci il nome dipendente', 'error'); document.getElementById('r-name').focus(); return; }
+
+  const { from, to } = reportPeriod === 'custom' ? {
+    from: document.getElementById('r-from').value || '2000-01-01',
+    to: document.getElementById('r-to').value || '2099-12-31'
+  } : getFilterDates(reportPeriod);
+
   const company = document.getElementById('r-company').value;
-  const from = document.getElementById('r-from').value;
-  const to = document.getElementById('r-to').value;
-  const nsNum = document.getElementById('r-nsnum').value || 'NS-2026-001';
+  const nsNum = document.getElementById('r-nsnum').value || 'NS-' + new Date().getFullYear() + '-001';
   const clientF = document.getElementById('r-client').value;
   const onlyReimb = document.getElementById('r-only-reimb').checked;
   const includeReceipts = document.getElementById('r-include-receipts').checked;
+  const expenses = filterExpenses({ from, to, client: clientF||null, onlyReimb }).sort((a,b) => a.date.localeCompare(b.date));
 
-  if (!name) { showToast('Inserisci il nome dipendente', 'error'); document.getElementById('r-name').focus(); return; }
+  if (expenses.length === 0) { showToast('Nessuna spesa per il report', 'error'); return; }
 
-  const expenses = filterExpenses({
-    from: from || null,
-    to: to || null,
-    client: clientF || null,
-    onlyReimb
-  }).sort((a,b) => a.date > b.date ? 1 : -1);
-
-  if (expenses.length === 0) { showToast('Nessuna spesa corrisponde ai filtri', 'error'); return; }
-
-  // Totals by category
+  const total = expenses.reduce((s,e) => s+e.amount, 0);
   const catTotals = {};
-  expenses.forEach(e => { catTotals[e.category] = (catTotals[e.category] || 0) + e.amount; });
-  const grandTotal = expenses.reduce((s,e) => s + e.amount, 0);
+  expenses.forEach(e => { catTotals[e.category] = (catTotals[e.category]||0) + e.amount; });
 
-  // Currency breakdown
-  const currTotals = {};
-  expenses.forEach(e => { currTotals[e.currency||'EUR'] = (currTotals[e.currency||'EUR']||0) + e.amount; });
+  const rows = expenses.map(e => {
+    const cat = CATS[e.category] || CATS.other;
+    return `<tr>
+      <td>${fmtDate(e.date)}</td>
+      <td>${cat.emoji} ${cat.label}</td>
+      <td>${esc(e.desc)}</td>
+      <td>${esc(e.client||'—')}</td>
+      <td style="text-align:right;font-weight:700">${fmtAmount(e.amount,e.currency)}</td>
+      <td style="text-align:center">${e.reimbursable?'✅':'—'}</td>
+    </tr>`;
+  }).join('');
 
-  const receiptSection = includeReceipts && expenses.some(e => e.receipt)
-    ? `<div style="page-break-before:always;padding:24px">
-        <h3 style="font-size:14px;font-weight:700;color:#1a2744;margin-bottom:16px;border-bottom:2px solid #1a2744;padding-bottom:8px">📎 RICEVUTE ALLEGATE</h3>
-        <div style="display:flex;flex-wrap:wrap;gap:12px">
-          ${expenses.filter(e=>e.receipt).map(e=>`
-            <div style="border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;width:120px;text-align:center">
-              <img src="${e.receipt}" style="width:120px;height:90px;object-fit:cover;display:block">
-              <div style="padding:4px 6px;font-size:9px;color:#4b5563;line-height:1.3">${e.date}<br>${esc(e.desc).substring(0,30)}</div>
-            </div>`).join('')}
-        </div>
-       </div>` : '';
+  const catRows = Object.entries(catTotals).map(([k,v]) => {
+    const c = CATS[k]||CATS.other;
+    return `<tr><td>${c.emoji} ${c.label}</td><td style="text-align:right;font-weight:700">${fmtAmount(v,'EUR')}</td></tr>`;
+  }).join('');
 
-  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
-  <title>Nota Spese ${nsNum}</title>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:Arial,sans-serif;font-size:11px;color:#1f2937;background:#fff}
-    .page{padding:28px 36px}
-    h1{font-size:22px;font-weight:900;color:#1a2744;letter-spacing:-0.5px}
-    .header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #1a2744;padding-bottom:16px;margin-bottom:20px}
-    .header-left .sub{font-size:12px;color:#4b5563;margin-top:6px}
-    .meta-box{background:#f3f4f6;border-radius:8px;padding:10px 16px;font-size:11px}
-    .meta-box table{width:100%}
-    .meta-box td{padding:2px 6px;color:#374151}
-    .meta-box td:first-child{font-weight:700;color:#1a2744;white-space:nowrap}
-    h3{font-size:12px;font-weight:800;color:#1a2744;text-transform:uppercase;letter-spacing:.5px;margin:20px 0 10px;border-bottom:2px solid #e5e7eb;padding-bottom:6px}
-    table.exp{width:100%;border-collapse:collapse;font-size:10px}
-    table.exp th{background:#1a2744;color:#fff;padding:7px 8px;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:.4px}
-    table.exp td{padding:6px 8px;border-bottom:1px solid #f3f4f6;vertical-align:top}
-    table.exp tr:nth-child(even) td{background:#f9fafb}
-    table.exp td.amount{text-align:right;font-weight:700}
-    table.exp tfoot td{background:#e5e7eb;font-weight:800;border-top:2px solid #1a2744;padding:8px}
-    .breakdown{display:flex;gap:20px;flex-wrap:wrap;margin:12px 0}
-    .bk-item{flex:1;min-width:140px;background:#f3f4f6;border-radius:6px;padding:8px 12px}
-    .bk-item .bk-label{font-size:9px;font-weight:700;color:#4b5563;text-transform:uppercase;letter-spacing:.3px}
-    .bk-item .bk-val{font-size:16px;font-weight:900;color:#1a2744;margin-top:4px}
-    .sig-section{margin-top:40px;display:flex;gap:40px}
-    .sig-box{flex:1;border-top:2px solid #374151;padding-top:8px;font-size:10px;color:#374151}
-    .sig-box .sig-label{font-weight:700;margin-bottom:30px}
-    @media print{
-      @page{margin:0;size:A4}
-      body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    }
-  </style>
-  </head><body>
-  <div class="page">
-    <div class="header">
-      <div class="header-left">
-        <h1>💼 NOTA SPESE</h1>
-        <div class="sub">Numero: <b>${esc(nsNum)}</b> &nbsp;·&nbsp; Generata il: <b>${new Date().toLocaleDateString('it-IT')}</b></div>
-      </div>
-      <div class="meta-box">
-        <table>
-          <tr><td>Dipendente:</td><td>${esc(name)}</td></tr>
-          <tr><td>Azienda:</td><td>${esc(company||'—')}</td></tr>
-          <tr><td>Periodo:</td><td>${from||'—'} → ${to||'—'}</td></tr>
-          <tr><td>Tipo:</td><td>${onlyReimb ? 'Solo rimborsabili' : 'Tutte le spese'}</td></tr>
-        </table>
-      </div>
+  const receiptSection = includeReceipts ? expenses.filter(e=>e.receipt).map(e => {
+    const cat = CATS[e.category]||CATS.other;
+    return `<div style="page-break-inside:avoid;margin-top:24px">
+      <p style="font-weight:700;margin-bottom:8px">${cat.emoji} ${esc(e.desc)} — ${fmtDate(e.date)}</p>
+      <img src="${e.receipt}" style="max-width:100%;max-height:400px;object-fit:contain;border:1px solid #e2e8f0;border-radius:8px">
+    </div>`;
+  }).join('') : '';
+
+  const html = `<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8">
+    <title>Nota Spese — ${esc(name)}</title>
+    <style>
+      body{font-family:system-ui,sans-serif;padding:40px;color:#1e293b;max-width:900px;margin:0 auto}
+      h1{font-size:24px;font-weight:800;color:#2563eb}
+      .meta{display:flex;gap:32px;margin:16px 0 24px;font-size:13px;color:#64748b}
+      .meta b{color:#1e293b}
+      table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:24px}
+      th{background:#2563eb;color:#fff;padding:10px 12px;text-align:left;font-weight:700}
+      td{padding:9px 12px;border-bottom:1px solid #e2e8f0}
+      tr:nth-child(even) td{background:#f8fafc}
+      .total-row td{font-weight:800;border-top:2px solid #2563eb;font-size:15px}
+      .sig{margin-top:48px;display:flex;gap:60px}
+      .sig div{flex:1}
+      .sig .line{border-top:1px solid #94a3b8;padding-top:6px;font-size:12px;color:#64748b}
+      @media print{body{padding:20px}}
+    </style></head><body>
+    <h1>💼 Nota Spese</h1>
+    <div class="meta">
+      <div><b>Dipendente</b><br>${esc(name)}</div>
+      ${company ? `<div><b>Azienda</b><br>${esc(company)}</div>` : ''}
+      <div><b>Numero</b><br>${esc(nsNum)}</div>
+      <div><b>Periodo</b><br>${fmtDate(from)} → ${fmtDate(to)}</div>
+      <div><b>Generato</b><br>${fmtDate(today())}</div>
     </div>
-
-    <div class="breakdown">
-      <div class="bk-item"><div class="bk-label">📊 Totale Voci</div><div class="bk-val">${expenses.length}</div></div>
-      ${Object.entries(currTotals).map(([c,v]) => `<div class="bk-item"><div class="bk-label">💶 Totale ${c}</div><div class="bk-val">${currencySymbol(c)} ${v.toFixed(2)}</div></div>`).join('')}
-    </div>
-
-    <h3>📋 Dettaglio Spese</h3>
-    <table class="exp">
-      <thead><tr>
-        <th>Data</th><th>Categoria</th><th>Descrizione</th><th>Cliente/Progetto</th><th style="text-align:right">Importo</th><th>Rimbors.</th><th>Note</th>
-      </tr></thead>
-      <tbody>
-        ${expenses.map(e => `<tr>
-          <td style="white-space:nowrap">${e.date}</td>
-          <td>${CATS[e.category] ? CATS[e.category].emoji + ' ' + CATS[e.category].label : e.category}</td>
-          <td>${esc(e.desc)}</td>
-          <td style="color:#4b5563">${esc(e.client||'—')}</td>
-          <td class="amount">${fmtAmount(e.amount, e.currency||'EUR')}</td>
-          <td style="text-align:center">${e.reimbursable ? '✅' : '✗'}</td>
-          <td style="color:#6b7280">${esc(e.notes||'')}</td>
-        </tr>`).join('')}
-      </tbody>
-      <tfoot><tr>
-        <td colspan="4" style="text-align:right">TOTALE COMPLESSIVO</td>
-        <td class="amount" style="font-size:13px">${Object.entries(currTotals).map(([c,v]) => currencySymbol(c)+' '+v.toFixed(2)).join(' + ')}</td>
-        <td colspan="2"></td>
-      </tr></tfoot>
+    <table>
+      <thead><tr><th>Data</th><th>Categoria</th><th>Descrizione</th><th>Cliente</th><th style="text-align:right">Importo</th><th style="text-align:center">Rimb.</th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr class="total-row"><td colspan="4"><b>TOTALE</b></td><td style="text-align:right">${fmtAmount(total,'EUR')}</td><td></td></tr></tfoot>
     </table>
-
-    <h3>📊 Riepilogo per Categoria</h3>
-    <table class="exp">
-      <thead><tr><th>Categoria</th><th style="text-align:right">Totale</th></tr></thead>
-      <tbody>
-        ${Object.entries(catTotals).sort((a,b)=>b[1]-a[1]).map(([cat,val]) => {
-          const c = CATS[cat]||{emoji:'📦',label:cat};
-          return `<tr><td>${c.emoji} ${c.label}</td><td class="amount">${val.toFixed(2)}</td></tr>`;
-        }).join('')}
-      </tbody>
+    <table style="max-width:300px">
+      <thead><tr><th colspan="2">Riepilogo per categoria</th></tr></thead>
+      <tbody>${catRows}</tbody>
     </table>
-
-    <div class="sig-section">
-      <div class="sig-box">
-        <div class="sig-label">Firma Dipendente</div>
-        <div>${esc(name)}</div>
-      </div>
-      <div class="sig-box">
-        <div class="sig-label">Firma Responsabile</div>
-        <div>Approvato da: ___________________</div>
-      </div>
-      <div class="sig-box">
-        <div class="sig-label">Data Approvazione</div>
-        <div>___________________</div>
-      </div>
+    <div class="sig">
+      <div><div class="line">Firma Dipendente</div></div>
+      <div><div class="line">Firma Responsabile</div></div>
+      <div><div class="line">Data Approvazione</div></div>
     </div>
-  </div>
-  ${receiptSection}
-  <script>window.onload=function(){window.print();}<\/script>
-  </body></html>`;
+    ${receiptSection}
+    <script>window.onload=function(){window.print();}<\/script>
+    </body></html>`;
 
   const w = window.open('', '_blank');
   if (w) { w.document.write(html); w.document.close(); }
@@ -1164,31 +1036,44 @@ function generatePDF() {
 }
 
 // ============================================================
-// UTILS
+// CSV EXPORT
 // ============================================================
-function esc(str) {
-  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function exportCSV() {
+  const { from, to } = getFilterDates(reportPeriod);
+  const expenses = filterExpenses({ from, to }).sort((a,b) => a.date.localeCompare(b.date));
+  if (expenses.length === 0) { showToast('Nessuna spesa da esportare','error'); return; }
+  const header = 'Data,Categoria,Descrizione,Cliente,Importo,Valuta,Rimborsabile';
+  const rows = expenses.map(e =>
+    [e.date, CATS[e.category]?.label||e.category, `"${(e.desc||'').replace(/"/g,'""')}"`,
+     `"${(e.client||'').replace(/"/g,'""')}"`, e.amount, e.currency, e.reimbursable?'Sì':'No'].join(',')
+  );
+  const csv = [header, ...rows].join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'spese_' + today() + '.csv'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('CSV scaricato ✓', 'success');
 }
 
-function showToast(msg, type) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + (type||'');
-  clearTimeout(t._t);
-  t._t = setTimeout(() => { t.classList.remove('show'); }, 3000);
-}
-
-// Auto-increment NS number
-function initNsNum() {
-  const year = new Date().getFullYear();
-  const existing = state.expenses.length;
-  state.settings.nsNum = 'NS-' + year + '-' + String(Math.ceil(existing / 10) + 1).padStart(3, '0');
-  document.getElementById('hdr-ns-num').textContent = state.settings.nsNum;
-  document.getElementById('dash-ns-num').textContent = state.settings.nsNum;
-  document.getElementById('r-nsnum').value = state.settings.nsNum;
-}
-
-document.addEventListener('DOMContentLoaded', initNsNum);
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+  loadState();
+  buildCatGrid();
+  resetForm();
+  updateDashboard();
+  updateHeaderTotal();
+  // Wire report preview inputs
+  ['r-from','r-to','r-client'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', updateReportPreview);
+  });
+  // Default report period pill
+  setReportPeriod(document.querySelector('[data-rp="week"]'), 'week');
+});
 </script>
+
 </body>
 </html>
