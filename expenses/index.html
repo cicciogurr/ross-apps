@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expense Tracker — Note Spese</title>
+<script>
+(function(){
+  var banner = document.createElement('div');
+  banner.id = 'open-banner';
+  banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#2563eb;color:#fff;text-align:center;padding:10px 16px;font-family:system-ui,sans-serif;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:12px;box-shadow:0 2px 12px rgba(0,0,0,0.3)';
+  banner.innerHTML = '💼 Per usare l\'app: <b>scarica il file → aprilo in Chrome o Safari</b> &nbsp;|&nbsp; <button onclick="document.getElementById(\'open-banner\').remove();document.body.style.paddingTop=\'52px\'" style="background:rgba(255,255,255,0.2);border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-weight:700;color:#fff">✕</button>';
+  document.addEventListener('DOMContentLoaded', function(){ document.body.insertBefore(banner, document.body.firstChild); document.body.style.paddingTop='88px'; });
+})();
+</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue-dark:#1a2744;
+  --blue:#2563eb;
+  --blue-light:#dbeafe;
+  --green:#16a34a;
+  --green-light:#dcfce7;
+  --red:#dc2626;
+  --red-light:#fee2e2;
+  --amber:#d97706;
+  --amber-light:#fef3c7;
+  --gray-50:#f9fafb;
+  --gray-100:#f3f4f6;
+  --gray-200:#e5e7eb;
+  --gray-300:#d1d5db;
+  --gray-400:#9ca3af;
+  --gray-500:#6b7280;
+  --gray-600:#4b5563;
+  --gray-700:#374151;
+  --gray-800:#1f2937;
+  --white:#ffffff;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.06);
+  --shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.06);
+  --shadow-lg:0 10px 15px rgba(0,0,0,.1),0 4px 6px rgba(0,0,0,.05);
+  --radius:8px;
+  --radius-lg:12px;
+}
+body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--gray-50);color:var(--gray-800);min-height:100vh;font-size:14px;line-height:1.5}
+/* ---- HEADER ---- */
+#app-header{background:var(--blue-dark);color:#fff;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:44px;z-index:100;box-shadow:var(--shadow-md)}
+#app-header .logo{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:700;letter-spacing:-.3px}
+#app-header .logo span.emoji{font-size:20px}
+#header-meta{display:flex;align-items:center;gap:16px;font-size:12px;color:rgba(255,255,255,.7)}
+#header-meta b{color:#fff}
+/* ---- NAV ---- */
+#main-nav{background:var(--white);border-bottom:1px solid var(--gray-200);padding:0 24px;display:flex;gap:0;position:sticky;top:100px;z-index:99;box-shadow:var(--shadow-sm);overflow-x:auto}
+.nav-tab{padding:14px 18px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:600;color:var(--gray-500);border-bottom:3px solid transparent;white-space:nowrap;transition:all .15s;display:flex;align-items:center;gap:6px}
+.nav-tab:hover{color:var(--blue);background:var(--gray-50)}
+.nav-tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+/* ---- MAIN ---- */
+#main-content{max-width:1100px;margin:0 auto;padding:24px 16px}
+.section{display:none}
+.section.active{display:block}
+/* ---- CARDS ---- */
+.card{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow);border:1px solid var(--gray-200);padding:20px}
+.card-title{font-size:15px;font-weight:700;color:var(--gray-800);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.card-title .icon{font-size:18px}
+/* ---- STAT CARDS ---- */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{background:var(--white);border-radius:var(--radius-lg);border:1px solid var(--gray-200);padding:20px;box-shadow:var(--shadow)}
+.stat-card .label{font-size:12px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.stat-card .value{font-size:28px;font-weight:800;color:var(--blue-dark);line-height:1}
+.stat-card .sub{font-size:12px;color:var(--gray-500);margin-top:6px}
+.stat-card.green .value{color:var(--green)}
+.stat-card.red .value{color:var(--red)}
+/* ---- PERIOD SELECTOR ---- */
+.period-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.period-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--gray-300);background:var(--white);font-size:12px;font-weight:600;cursor:pointer;color:var(--gray-600);transition:all .15s}
+.period-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.period-custom{display:flex;gap:6px;align-items:center}
+.period-custom input{padding:5px 8px;border:1px solid var(--gray-300);border-radius:6px;font-size:12px;color:var(--gray-700)}
+/* ---- BAR CHART ---- */
+.chart-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.chart-row .cat-label{min-width:130px;font-size:12px;font-weight:600;color:var(--gray-700);display:flex;align-items:center;gap:6px}
+.chart-bar-wrap{flex:1;background:var(--gray-100);border-radius:4px;height:18px;overflow:hidden}
+.chart-bar{height:100%;border-radius:4px;transition:width .4s ease;background:var(--blue)}
+.chart-row .chart-val{min-width:80px;text-align:right;font-size:12px;font-weight:700;color:var(--gray-700)}
+/* ---- STATUS BADGE ---- */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.badge.draft{background:var(--amber-light);color:var(--amber)}
+.badge.ready{background:var(--green-light);color:var(--green)}
+.badge.reimb-yes{background:var(--green-light);color:var(--green)}
+.badge.reimb-no{background:var(--gray-100);color:var(--gray-500)}
+/* ---- BIG CTA ---- */
+.btn-cta{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:16px;border-radius:var(--radius-lg);background:var(--blue);color:#fff;font-size:15px;font-weight:700;border:none;cursor:pointer;box-shadow:var(--shadow-md);transition:background .15s}
+.btn-cta:hover{background:#1d4ed8}
+/* ---- FORM ---- */
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.form-field{display:flex;flex-direction:column;gap:4px}
+.form-field.full{grid-column:1/-1}
+.form-field label{font-size:12px;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:.4px}
+.form-field input,.form-field select,.form-field textarea{padding:9px 12px;border:1px solid var(--gray-300);border-radius:var(--radius);font-size:14px;color:var(--gray-800);background:var(--white);transition:border-color .15s;font-family:inherit}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+.form-field textarea{resize:vertical;min-height:72px}
+.amount-wrap{display:flex;gap:0}
+.amount-wrap select{border-radius:var(--radius) 0 0 var(--radius);border-right:none;background:var(--gray-100);min-width:74px;font-weight:700}
+.amount-wrap input{border-radius:0 var(--radius) var(--radius) 0;flex:1}
+.checkbox-field{display:flex;align-items:center;gap:8px;padding:10px 0}
+.checkbox-field input[type=checkbox]{width:16px;height:16px;accent-color:var(--blue)}
+.checkbox-field label{font-size:14px;font-weight:600;color:var(--gray-700);cursor:pointer}
+/* ---- RECEIPT UPLOAD ---- */
+.upload-area{border:2px dashed var(--gray-300);border-radius:var(--radius-lg);padding:20px;text-align:center;cursor:pointer;transition:all .15s;background:var(--gray-50)}
+.upload-area:hover{border-color:var(--blue);background:var(--blue-light)}
+.upload-area .upload-icon{font-size:28px;margin-bottom:8px}
+.upload-area p{font-size:12px;color:var(--gray-500);margin-top:4px}
+.upload-area input[type=file]{display:none}
+.receipt-preview{margin-top:10px;display:flex;align-items:center;gap:10px;background:var(--gray-100);border-radius:var(--radius);padding:8px 12px}
+.receipt-preview img{width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid var(--gray-200)}
+.receipt-preview .receipt-name{font-size:12px;font-weight:600;color:var(--gray-700);flex:1}
+.receipt-preview .remove-receipt{background:none;border:none;color:var(--red);cursor:pointer;font-size:16px}
+/* ---- BUTTONS ---- */
+.btn{padding:8px 16px;border-radius:var(--radius);border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--blue);color:#fff}.btn-primary:hover{background:#1d4ed8}
+.btn-success{background:var(--green);color:#fff}.btn-success:hover{background:#15803d}
+.btn-danger{background:var(--red);color:#fff}.btn-danger:hover{background:#b91c1c}
+.btn-ghost{background:var(--gray-100);color:var(--gray-700);border:1px solid var(--gray-200)}.btn-ghost:hover{background:var(--gray-200)}
+.btn-sm{padding:4px 10px;font-size:12px}
+.btn-icon{padding:5px 7px;font-size:14px}
+/* ---- TABLE ---- */
+.table-wrap{overflow-x:auto;margin-top:0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{background:var(--gray-50);padding:10px 12px;text-align:left;font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--gray-200);white-space:nowrap;cursor:pointer;user-select:none}
+thead th:hover{color:var(--blue)}
+thead th .sort-icon{margin-left:4px;opacity:.4}
+thead th.sorted .sort-icon{opacity:1;color:var(--blue)}
+tbody tr{border-bottom:1px solid var(--gray-100);transition:background .1s}
+tbody tr:hover{background:var(--gray-50)}
+tbody tr.selected{background:var(--blue-light)}
+td{padding:10px 12px;vertical-align:middle}
+td.amount{font-weight:700;text-align:right;color:var(--gray-800)}
+.receipt-thumb{width:32px;height:32px;object-fit:cover;border-radius:4px;cursor:pointer;border:1px solid var(--gray-200)}
+.no-receipt{color:var(--gray-300);font-size:18px}
+tfoot td{padding:10px 12px;font-weight:700;background:var(--gray-50);border-top:2px solid var(--gray-200)}
+/* ---- FILTERS ---- */
+.filter-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;padding:14px;background:var(--gray-50);border-radius:var(--radius);border:1px solid var(--gray-200)}
+.filter-bar input,.filter-bar select{padding:6px 10px;border:1px solid var(--gray-300);border-radius:6px;font-size:12px;color:var(--gray-700);background:var(--white)}
+.filter-bar label{font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase}
+/* ---- MODAL ---- */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.hidden{display:none}
+.modal{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);max-width:560px;width:100%;max-height:90vh;overflow-y:auto}
+.modal-header{padding:20px 24px 16px;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-between}
+.modal-header h3{font-size:16px;font-weight:700;color:var(--gray-800)}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--gray-400);padding:2px 6px}.modal-close:hover{color:var(--gray-700)}
+.modal-body{padding:20px 24px}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--gray-200);display:flex;justify-content:flex-end;gap:10px}
+/* ---- REPORT FORM ---- */
+.report-preview{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius);padding:16px;margin-top:16px;font-size:13px;color:var(--gray-600)}
+.report-preview b{color:var(--gray-800)}
+/* ---- ALERTS ---- */
+.toast{position:fixed;bottom:24px;right:24px;z-index:2000;background:var(--gray-800);color:#fff;padding:12px 20px;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);font-size:13px;font-weight:600;transform:translateY(100px);opacity:0;transition:all .3s}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{background:var(--green)}
+.toast.error{background:var(--red)}
+/* ---- EMPTY STATE ---- */
+.empty-state{text-align:center;padding:48px 24px;color:var(--gray-400)}
+.empty-state .empty-icon{font-size:48px;margin-bottom:12px}
+.empty-state p{font-size:14px}
+/* ---- TOOLTIP ---- */
+[title]{position:relative;cursor:help}
+/* ---- MULTI-SELECT ---- */
+.select-all-wrap{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px;color:var(--gray-600)}
+/* ---- RESPONSIVE ---- */
+@media(max-width:640px){
+  #app-header{padding:0 12px}
+  #main-nav{padding:0 8px}
+  .nav-tab{padding:12px 10px;font-size:12px}
+  #main-content{padding:16px 10px}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .form-grid{grid-template-columns:1fr}
+  .filter-bar{flex-direction:column;align-items:flex-start}
+}
+@media print{
+  body *{display:none}
+  #print-area,#print-area *{display:block}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="app-header">
+  <div class="logo"><span class="emoji">💼</span> Expense Tracker</div>
+  <div id="header-meta">
+    <span>Nota Spese <b id="hdr-ns-num">NS-2026-001</b></span>
+    <span id="hdr-status" class="badge draft">Bozza</span>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <button class="nav-tab active" data-section="dashboard" onclick="switchSection('dashboard')">📋 Dashboard</button>
+  <button class="nav-tab" data-section="add" onclick="switchSection('add')">➕ Aggiungi</button>
+  <button class="nav-tab" data-section="list" onclick="switchSection('list')">📊 Lista Spese</button>
+  <button class="nav-tab" data-section="report" onclick="switchSection('report')">📄 Genera Report</button>
+</nav>
+
+<!-- MAIN -->
+<main id="main-content">
+
+  <!-- ==================== DASHBOARD ==================== -->
+  <div id="section-dashboard" class="section active">
+    <div class="period-bar">
+      <span style="font-size:12px;font-weight:700;color:var(--gray-500);text-transform:uppercase">Periodo:</span>
+      <button class="period-btn" onclick="setPeriod('week',this)">Settimana</button>
+      <button class="period-btn active" onclick="setPeriod('month',this)">Mese</button>
+      <button class="period-btn" onclick="setPeriod('all',this)">Tutto</button>
+      <div class="period-custom">
+        <input type="date" id="period-from" onchange="setPeriod('custom',null)">
+        <span style="font-size:12px;color:var(--gray-400)">→</span>
+        <input type="date" id="period-to" onchange="setPeriod('custom',null)">
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="label">💶 Totale Spese</div>
+        <div class="value" id="stat-total">€ 0</div>
+        <div class="sub" id="stat-count">0 voci</div>
+      </div>
+      <div class="stat-card green">
+        <div class="label">✅ Rimborsabile</div>
+        <div class="value" id="stat-reimb">€ 0</div>
+        <div class="sub" id="stat-reimb-count">0 voci</div>
+      </div>
+      <div class="stat-card red">
+        <div class="label">❌ Non Rimborsabile</div>
+        <div class="value" id="stat-noreimb">€ 0</div>
+        <div class="sub" id="stat-noreimb-count">0 voci</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">📎 Ricevute</div>
+        <div class="value" id="stat-receipts">0</div>
+        <div class="sub">caricate</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px" class="dash-bottom-grid">
+      <div class="card">
+        <div class="card-title"><span class="icon">📊</span> Spese per Categoria</div>
+        <div id="cat-chart">
+          <div class="empty-state"><div class="empty-icon">📊</div><p>Nessuna spesa</p></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="icon">📋</span> Stato Nota Spese</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:13px;color:var(--gray-600)">Stato attuale</span>
+            <span id="dash-status" class="badge draft">Bozza</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:13px;color:var(--gray-600)">Numero</span>
+            <span style="font-weight:700;color:var(--gray-800)" id="dash-ns-num">NS-2026-001</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:13px;color:var(--gray-600)">Voci totali</span>
+            <span style="font-weight:700;color:var(--gray-800)" id="dash-count2">0</span>
+          </div>
+          <hr style="border:none;border-top:1px solid var(--gray-200)">
+          <button class="btn btn-ghost" onclick="markReady()" id="btn-mark-ready">📝 Segna Pronta per Invio</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-cta" onclick="switchSection('report')">📄 Genera PDF Nota Spese</button>
+  </div>
+
+  <!-- ==================== ADD ==================== -->
+  <div id="section-add" class="section">
+    <div class="card">
+      <div class="card-title"><span class="icon">➕</span> <span id="form-title">Nuova Spesa</span></div>
+      <form id="expense-form" onsubmit="submitExpense(event)">
+        <input type="hidden" id="edit-id">
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Data *</label>
+            <input type="date" id="f-date" required>
+          </div>
+          <div class="form-field">
+            <label>Categoria *</label>
+            <select id="f-category" required>
+              <option value="">— Seleziona —</option>
+              <option value="flight">✈️ Volo</option>
+              <option value="hotel">🏨 Hotel</option>
+              <option value="meal">🍽️ Pasto / Intrattenimento</option>
+              <option value="taxi">🚗 Taxi / Auto</option>
+              <option value="train">🚂 Treno</option>
+              <option value="parking">🅿️ Parcheggio</option>
+              <option value="phone">📱 Telefono / Internet</option>
+              <option value="conference">🎟️ Conference / Evento</option>
+              <option value="other">📦 Altro</option>
+            </select>
+          </div>
+          <div class="form-field full">
+            <label>Descrizione *</label>
+            <input type="text" id="f-desc" placeholder="es. Cena cliente Goldman Sachs" required maxlength="200">
+          </div>
+          <div class="form-field">
+            <label>Importo *</label>
+            <div class="amount-wrap">
+              <select id="f-currency">
+                <option value="EUR">EUR €</option>
+                <option value="USD">USD $</option>
+                <option value="GBP">GBP £</option>
+                <option value="CHF">CHF ₣</option>
+              </select>
+              <input type="number" id="f-amount" placeholder="0.00" step="0.01" min="0" required>
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Progetto / Cliente</label>
+            <input type="text" id="f-client" placeholder="es. Deal XYZ / KPMG Milano">
+          </div>
+          <div class="form-field full">
+            <label>Ricevuta</label>
+            <div class="upload-area" onclick="document.getElementById('f-receipt').click()" id="upload-area">
+              <div class="upload-icon">📎</div>
+              <b style="font-size:13px;color:var(--gray-700)">Clicca per allegare ricevuta</b>
+              <p>JPG, PNG o PDF · max 5 MB</p>
+              <input type="file" id="f-receipt" accept="image/*,.pdf" onchange="handleReceiptUpload(this)">
+            </div>
+            <div id="receipt-preview-wrap" style="display:none" class="receipt-preview">
+              <img id="receipt-thumb" src="" alt="ricevuta">
+              <span class="receipt-name" id="receipt-fname">—</span>
+              <button type="button" class="remove-receipt" onclick="removeReceipt()">✕</button>
+            </div>
+          </div>
+          <div class="form-field full">
+            <label>Note</label>
+            <textarea id="f-notes" placeholder="Note aggiuntive (opzionale)..." rows="2"></textarea>
+          </div>
+          <div class="form-field full">
+            <div class="checkbox-field">
+              <input type="checkbox" id="f-reimbursable" checked>
+              <label for="f-reimbursable">✅ Spesa rimborsabile dall'azienda</label>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:20px;justify-content:flex-end">
+          <button type="button" class="btn btn-ghost" onclick="resetForm()">🔄 Resetta</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-expense">➕ Aggiungi Spesa</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== LIST ==================== -->
+  <div id="section-list" class="section">
+    <div class="card" style="margin-bottom:16px">
+      <div class="filter-bar">
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <label>Da</label>
+          <input type="date" id="fl-from" onchange="renderList()">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <label>A</label>
+          <input type="date" id="fl-to" onchange="renderList()">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <label>Categoria</label>
+          <select id="fl-cat" onchange="renderList()">
+            <option value="">Tutte</option>
+            <option value="flight">✈️ Volo</option>
+            <option value="hotel">🏨 Hotel</option>
+            <option value="meal">🍽️ Pasto</option>
+            <option value="taxi">🚗 Taxi</option>
+            <option value="train">🚂 Treno</option>
+            <option value="parking">🅿️ Parcheggio</option>
+            <option value="phone">📱 Telefono</option>
+            <option value="conference">🎟️ Conference</option>
+            <option value="other">📦 Altro</option>
+          </select>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <label>Cliente/Progetto</label>
+          <input type="text" id="fl-client" placeholder="Cerca..." oninput="renderList()">
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="clearFilters()">✕ Resetta filtri</button>
+        <button class="btn btn-primary btn-sm" style="margin-left:auto" onclick="exportSelected()">⬇️ Export selezionati</button>
+      </div>
+      <div class="select-all-wrap">
+        <input type="checkbox" id="chk-all" onchange="toggleSelectAll(this)">
+        <label for="chk-all" style="cursor:pointer">Seleziona tutto</label>
+        <span id="selected-count" style="color:var(--blue);font-weight:700"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="table-wrap">
+        <table id="expense-table">
+          <thead>
+            <tr>
+              <th style="width:36px"></th>
+              <th onclick="sortBy('date')">Data <span class="sort-icon" id="sort-date">↕</span></th>
+              <th onclick="sortBy('category')">Categoria <span class="sort-icon" id="sort-category">↕</span></th>
+              <th onclick="sortBy('desc')">Descrizione <span class="sort-icon" id="sort-desc">↕</span></th>
+              <th onclick="sortBy('client')">Cliente/Progetto <span class="sort-icon" id="sort-client">↕</span></th>
+              <th onclick="sortBy('amount')" style="text-align:right">Importo <span class="sort-icon" id="sort-amount">↕</span></th>
+              <th>Ricevuta</th>
+              <th>Rimbors.</th>
+              <th>Azioni</th>
+            </tr>
+          </thead>
+          <tbody id="expense-tbody"></tbody>
+          <tfoot id="expense-tfoot"></tfoot>
+        </table>
+      </div>
+      <div id="list-empty" class="empty-state" style="display:none">
+        <div class="empty-icon">📭</div>
+        <p>Nessuna spesa trovata</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== REPORT ==================== -->
+  <div id="section-report" class="section">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="card">
+        <div class="card-title"><span class="icon">📄</span> Dati Nota Spese</div>
+        <div class="form-grid" style="grid-template-columns:1fr">
+          <div class="form-field">
+            <label>Nome Dipendente *</label>
+            <input type="text" id="r-name" placeholder="es. Marco Rossi" value="">
+          </div>
+          <div class="form-field">
+            <label>Azienda</label>
+            <input type="text" id="r-company" placeholder="es. Acme Advisory S.r.l." value="">
+          </div>
+          <div class="form-field">
+            <label>Periodo Da</label>
+            <input type="date" id="r-from">
+          </div>
+          <div class="form-field">
+            <label>Periodo A</label>
+            <input type="date" id="r-to">
+          </div>
+          <div class="form-field">
+            <label>Numero Nota Spese</label>
+            <input type="text" id="r-nsnum" value="NS-2026-001">
+          </div>
+          <div class="form-field">
+            <label>Filtro Cliente/Progetto</label>
+            <input type="text" id="r-client" placeholder="Lascia vuoto per tutte">
+          </div>
+          <div class="checkbox-field">
+            <input type="checkbox" id="r-only-reimb" checked>
+            <label for="r-only-reimb">Solo spese rimborsabili</label>
+          </div>
+          <div class="checkbox-field">
+            <input type="checkbox" id="r-include-receipts" checked>
+            <label for="r-include-receipts">Allega thumbnail ricevute</label>
+          </div>
+        </div>
+        <div style="margin-top:20px">
+          <button class="btn-cta" onclick="generatePDF()">🖨️ Genera PDF / Stampa</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="icon">👁️</span> Anteprima</div>
+        <div class="report-preview" id="report-preview">
+          <p style="color:var(--gray-400);text-align:center;padding:20px 0">Compila i dati per vedere l'anteprima</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- MODAL: image viewer -->
+<div class="modal-overlay hidden" id="img-modal" onclick="closeImgModal(event)">
+  <div class="modal" style="max-width:700px">
+    <div class="modal-header">
+      <h3>📎 Ricevuta</h3>
+      <button class="modal-close" onclick="closeImgModal()">✕</button>
+    </div>
+    <div class="modal-body" style="text-align:center">
+      <img id="img-modal-img" src="" style="max-width:100%;max-height:70vh;border-radius:var(--radius)">
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- PRINT AREA (hidden, populated by JS) -->
+<div id="print-area" style="display:none"></div>
+
+
+<script>
+// ============================================================
+// STATE & STORAGE
+// ============================================================
+const STORAGE_KEY = 'expense_tracker_v1';
+
+const SAMPLE_DATA = [
+  { id: 1, date: '2026-05-28', category: 'flight', desc: 'Volo Milano-Londra (Heathrow)', client: 'Deal XYZ - HSBC London', amount: 387.50, currency: 'EUR', reimbursable: true, notes: 'Economy class', receipt: null, receiptName: null },
+  { id: 2, date: '2026-05-28', category: 'hotel', desc: 'Marriott Canary Wharf - 2 notti', client: 'Deal XYZ - HSBC London', amount: 520.00, currency: 'EUR', reimbursable: true, notes: '', receipt: null, receiptName: null },
+  { id: 3, date: '2026-05-29', category: 'meal', desc: 'Cena con management team cliente', client: 'Deal XYZ - HSBC London', amount: 284.00, currency: 'GBP', reimbursable: true, notes: '4 persone', receipt: null, receiptName: null },
+  { id: 4, date: '2026-05-29', category: 'taxi', desc: 'Taxi Heathrow → City', client: 'Deal XYZ - HSBC London', amount: 67.00, currency: 'GBP', reimbursable: true, notes: '', receipt: null, receiptName: null },
+  { id: 5, date: '2026-05-30', category: 'conference', desc: 'Reuters Financial Summit 2026', client: 'Business Development', amount: 450.00, currency: 'EUR', reimbursable: true, notes: '', receipt: null, receiptName: null },
+  { id: 6, date: '2026-05-30', category: 'phone', desc: 'Roaming dati UK', client: 'Deal XYZ - HSBC London', amount: 15.00, currency: 'EUR', reimbursable: true, notes: '', receipt: null, receiptName: null }
+];
+
+let state = { expenses: [], settings: { nsNum: 'NS-2026-001', status: 'draft', nextId: 7 } };
+let currentPeriod = 'month';
+let currentReceipt = null;
+let currentReceiptName = null;
+let sortField = 'date';
+let sortDir = -1; // -1 = desc
+let selectedIds = new Set();
+
+function saveData() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return null;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = loadData();
+  if (saved && saved.expenses && saved.expenses.length > 0) {
+    state = saved;
+  } else {
+    state.expenses = SAMPLE_DATA.map(e => ({...e}));
+    saveData();
+  }
+  // Set today's date in form
+  document.getElementById('f-date').value = today();
+  // Period
+  setPeriodDates('month');
+  updateDashboard();
+  renderList();
+  updateReportPreview();
+  updateHeaderStatus();
+  // Report form live update
+  ['r-name','r-company','r-from','r-to','r-nsnum','r-client','r-only-reimb','r-include-receipts'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', updateReportPreview);
+    if (el && el.tagName==='INPUT' && el.type==='text') el.addEventListener('input', updateReportPreview);
+  });
+});
+
+function today() {
+  return new Date().toISOString().split('T')[0];
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function switchSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('section-' + name).classList.add('active');
+  document.querySelector('[data-section="' + name + '"]').classList.add('active');
+  if (name === 'list') renderList();
+  if (name === 'dashboard') updateDashboard();
+  if (name === 'report') updateReportPreview();
+  if (name === 'add') { resetForm(); document.getElementById('f-date').value = today(); }
+}
+
+// ============================================================
+// PERIOD
+// ============================================================
+function setPeriodDates(mode) {
+  const now = new Date();
+  let from, to;
+  to = today();
+  if (mode === 'week') {
+    const d = new Date(); d.setDate(d.getDate() - 6);
+    from = d.toISOString().split('T')[0];
+  } else if (mode === 'month') {
+    from = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-01';
+  } else if (mode === 'all') {
+    from = '2000-01-01'; to = '2099-12-31';
+  }
+  document.getElementById('period-from').value = from || '';
+  document.getElementById('period-to').value = to;
+}
+
+function setPeriod(mode, btn) {
+  currentPeriod = mode;
+  if (btn) {
+    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  if (mode !== 'custom') setPeriodDates(mode);
+  updateDashboard();
+}
+
+function getPeriodRange() {
+  return {
+    from: document.getElementById('period-from').value || '2000-01-01',
+    to: document.getElementById('period-to').value || '2099-12-31'
+  };
+}
+
+// ============================================================
+// CATEGORIES
+// ============================================================
+const CATS = {
+  flight:     { label: 'Volo',               emoji: '✈️', color: '#2563eb' },
+  hotel:      { label: 'Hotel',              emoji: '🏨', color: '#7c3aed' },
+  meal:       { label: 'Pasto/Intratten.',   emoji: '🍽️', color: '#d97706' },
+  taxi:       { label: 'Taxi/Auto',          emoji: '🚗', color: '#0891b2' },
+  train:      { label: 'Treno',              emoji: '🚂', color: '#059669' },
+  parking:    { label: 'Parcheggio',         emoji: '🅿️', color: '#64748b' },
+  phone:      { label: 'Telefono/Internet',  emoji: '📱', color: '#db2777' },
+  conference: { label: 'Conference/Evento',  emoji: '🎟️', color: '#ea580c' },
+  other:      { label: 'Altro',              emoji: '📦', color: '#6b7280' }
+};
+
+function catLabel(cat) {
+  return CATS[cat] ? CATS[cat].emoji + ' ' + CATS[cat].label : cat;
+}
+
+// ============================================================
+// CURRENCY
+// ============================================================
+function currencySymbol(c) {
+  return { EUR:'€', USD:'$', GBP:'£', CHF:'₣' }[c] || c;
+}
+function fmtAmount(amount, currency) {
+  return currencySymbol(currency) + ' ' + parseFloat(amount).toFixed(2);
+}
+
+// ============================================================
+// FILTER EXPENSES
+// ============================================================
+function filterExpenses(opts) {
+  opts = opts || {};
+  let list = state.expenses;
+  const from = opts.from || '2000-01-01';
+  const to = opts.to || '2099-12-31';
+  list = list.filter(e => e.date >= from && e.date <= to);
+  if (opts.category) list = list.filter(e => e.category === opts.category);
+  if (opts.client) list = list.filter(e => (e.client||'').toLowerCase().includes(opts.client.toLowerCase()) || (e.desc||'').toLowerCase().includes(opts.client.toLowerCase()));
+  if (opts.onlyReimb) list = list.filter(e => e.reimbursable);
+  return list;
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function updateDashboard() {
+  const { from, to } = getPeriodRange();
+  const list = filterExpenses({ from, to });
+
+  // EUR-only for totals (simplified — show as-is, different currencies labelled)
+  const total = list.reduce((s,e) => s + (e.currency === 'EUR' ? e.amount : 0), 0);
+  const totalAll = list.reduce((s,e) => s + e.amount, 0); // raw sum, mixed currency
+  const reimb = list.filter(e => e.reimbursable);
+  const noReimb = list.filter(e => !e.reimbursable);
+  const reimbTotal = reimb.reduce((s,e) => s + (e.currency === 'EUR' ? e.amount : 0), 0);
+  const noReimbTotal = noReimb.reduce((s,e) => s + (e.currency === 'EUR' ? e.amount : 0), 0);
+  const receipts = list.filter(e => e.receipt).length;
+
+  document.getElementById('stat-total').textContent = '€ ' + totalAll.toFixed(2);
+  document.getElementById('stat-count').textContent = list.length + ' voci';
+  document.getElementById('stat-reimb').textContent = '€ ' + reimbTotal.toFixed(2);
+  document.getElementById('stat-reimb-count').textContent = reimb.length + ' voci';
+  document.getElementById('stat-noreimb').textContent = '€ ' + noReimbTotal.toFixed(2);
+  document.getElementById('stat-noreimb-count').textContent = noReimb.length + ' voci';
+  document.getElementById('stat-receipts').textContent = receipts;
+  document.getElementById('dash-count2').textContent = state.expenses.length;
+
+  // Category chart
+  const catTotals = {};
+  list.forEach(e => {
+    catTotals[e.category] = (catTotals[e.category] || 0) + e.amount;
+  });
+  const maxVal = Math.max(...Object.values(catTotals), 1);
+  const chartEl = document.getElementById('cat-chart');
+  if (Object.keys(catTotals).length === 0) {
+    chartEl.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div><p>Nessuna spesa nel periodo</p></div>';
+  } else {
+    const sorted = Object.entries(catTotals).sort((a,b) => b[1]-a[1]);
+    chartEl.innerHTML = sorted.map(([cat, val]) => {
+      const c = CATS[cat] || { emoji:'📦', label: cat, color:'#6b7280' };
+      const pct = Math.round((val / maxVal) * 100);
+      return `<div class="chart-row">
+        <div class="cat-label">${c.emoji} ${c.label}</div>
+        <div class="chart-bar-wrap"><div class="chart-bar" style="width:${pct}%;background:${c.color}"></div></div>
+        <div class="chart-val">${val.toFixed(2)}</div>
+      </div>`;
+    }).join('');
+  }
+}
+
+function updateHeaderStatus() {
+  const s = state.settings.status || 'draft';
+  const html = s === 'ready'
+    ? '<span class="badge ready">✅ Pronta per invio</span>'
+    : '<span class="badge draft">📝 Bozza</span>';
+  document.getElementById('hdr-status').outerHTML.replace;
+  document.getElementById('hdr-status').className = 'badge ' + (s === 'ready' ? 'ready' : 'draft');
+  document.getElementById('hdr-status').textContent = s === 'ready' ? '✅ Pronta per invio' : '📝 Bozza';
+  document.getElementById('dash-status').className = 'badge ' + (s === 'ready' ? 'ready' : 'draft');
+  document.getElementById('dash-status').textContent = s === 'ready' ? '✅ Pronta per invio' : '📝 Bozza';
+}
+
+function markReady() {
+  state.settings.status = state.settings.status === 'ready' ? 'draft' : 'ready';
+  saveData();
+  updateHeaderStatus();
+  document.getElementById('btn-mark-ready').textContent = state.settings.status === 'ready' ? '📝 Torna a Bozza' : '📝 Segna Pronta per Invio';
+  showToast(state.settings.status === 'ready' ? 'Nota spese pronta per l\'invio!' : 'Nota spese impostata come bozza', 'success');
+}
+
+// ============================================================
+// FORM
+// ============================================================
+function resetForm() {
+  document.getElementById('edit-id').value = '';
+  document.getElementById('expense-form').reset();
+  document.getElementById('form-title').textContent = 'Nuova Spesa';
+  document.getElementById('btn-submit-expense').textContent = '➕ Aggiungi Spesa';
+  document.getElementById('f-date').value = today();
+  document.getElementById('f-reimbursable').checked = true;
+  currentReceipt = null;
+  currentReceiptName = null;
+  document.getElementById('receipt-preview-wrap').style.display = 'none';
+  document.getElementById('upload-area').style.display = 'block';
+}
+
+function handleReceiptUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { showToast('File troppo grande (max 5 MB)', 'error'); return; }
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    currentReceipt = ev.target.result;
+    currentReceiptName = file.name;
+    const isImg = file.type.startsWith('image/');
+    document.getElementById('receipt-thumb').src = isImg ? currentReceipt : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" fill="%23e5e7eb" rx="4"/><text y="26" x="8" font-size="16">📄</text></svg>';
+    document.getElementById('receipt-fname').textContent = file.name;
+    document.getElementById('receipt-preview-wrap').style.display = 'flex';
+    document.getElementById('upload-area').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeReceipt() {
+  currentReceipt = null;
+  currentReceiptName = null;
+  document.getElementById('receipt-preview-wrap').style.display = 'none';
+  document.getElementById('upload-area').style.display = 'block';
+  document.getElementById('f-receipt').value = '';
+}
+
+function submitExpense(e) {
+  e.preventDefault();
+  const editId = document.getElementById('edit-id').value;
+  const expense = {
+    id: editId ? parseInt(editId) : (state.settings.nextId++),
+    date: document.getElementById('f-date').value,
+    category: document.getElementById('f-category').value,
+    desc: document.getElementById('f-desc').value.trim(),
+    amount: parseFloat(document.getElementById('f-amount').value),
+    currency: document.getElementById('f-currency').value,
+    client: document.getElementById('f-client').value.trim(),
+    notes: document.getElementById('f-notes').value.trim(),
+    reimbursable: document.getElementById('f-reimbursable').checked,
+    receipt: currentReceipt,
+    receiptName: currentReceiptName
+  };
+  if (editId) {
+    const idx = state.expenses.findIndex(x => x.id === parseInt(editId));
+    if (idx >= 0) state.expenses[idx] = expense;
+    showToast('Spesa aggiornata!', 'success');
+  } else {
+    state.expenses.push(expense);
+    showToast('Spesa aggiunta!', 'success');
+  }
+  saveData();
+  resetForm();
+  updateDashboard();
+  renderList();
+  switchSection('list');
+}
+
+function editExpense(id) {
+  const e = state.expenses.find(x => x.id === id);
+  if (!e) return;
+  switchSection('add');
+  document.getElementById('edit-id').value = e.id;
+  document.getElementById('f-date').value = e.date;
+  document.getElementById('f-category').value = e.category;
+  document.getElementById('f-desc').value = e.desc;
+  document.getElementById('f-amount').value = e.amount;
+  document.getElementById('f-currency').value = e.currency || 'EUR';
+  document.getElementById('f-client').value = e.client || '';
+  document.getElementById('f-notes').value = e.notes || '';
+  document.getElementById('f-reimbursable').checked = !!e.reimbursable;
+  currentReceipt = e.receipt || null;
+  currentReceiptName = e.receiptName || null;
+  if (currentReceipt) {
+    document.getElementById('receipt-thumb').src = currentReceipt;
+    document.getElementById('receipt-fname').textContent = currentReceiptName || 'ricevuta';
+    document.getElementById('receipt-preview-wrap').style.display = 'flex';
+    document.getElementById('upload-area').style.display = 'none';
+  }
+  document.getElementById('form-title').textContent = 'Modifica Spesa';
+  document.getElementById('btn-submit-expense').textContent = '💾 Salva Modifiche';
+}
+
+function deleteExpense(id) {
+  if (!confirm('Eliminare questa spesa?')) return;
+  state.expenses = state.expenses.filter(x => x.id !== id);
+  selectedIds.delete(id);
+  saveData();
+  renderList();
+  updateDashboard();
+  showToast('Spesa eliminata', 'error');
+}
+
+// ============================================================
+// LIST
+// ============================================================
+function getListFilters() {
+  return {
+    from: document.getElementById('fl-from').value || null,
+    to: document.getElementById('fl-to').value || null,
+    category: document.getElementById('fl-cat').value || null,
+    client: document.getElementById('fl-client').value || null
+  };
+}
+
+function clearFilters() {
+  document.getElementById('fl-from').value = '';
+  document.getElementById('fl-to').value = '';
+  document.getElementById('fl-cat').value = '';
+  document.getElementById('fl-client').value = '';
+  renderList();
+}
+
+function sortBy(field) {
+  if (sortField === field) sortDir *= -1;
+  else { sortField = field; sortDir = 1; }
+  // Update icons
+  ['date','category','desc','client','amount'].forEach(f => {
+    const el = document.getElementById('sort-' + f);
+    if (el) { el.textContent = f === field ? (sortDir === 1 ? '↑' : '↓') : '↕'; }
+    const th = el ? el.parentElement : null;
+    if (th) th.classList.toggle('sorted', f === field);
+  });
+  renderList();
+}
+
+function renderList() {
+  const f = getListFilters();
+  let list = filterExpenses({ from: f.from, to: f.to, category: f.category, client: f.client });
+
+  // Sort
+  list = [...list].sort((a, b) => {
+    let av = a[sortField === 'desc' ? 'desc' : sortField] || '';
+    let bv = b[sortField === 'desc' ? 'desc' : sortField] || '';
+    if (sortField === 'amount') { av = parseFloat(av); bv = parseFloat(bv); }
+    if (av < bv) return -1 * sortDir;
+    if (av > bv) return 1 * sortDir;
+    return 0;
+  });
+
+  const tbody = document.getElementById('expense-tbody');
+  const tfoot = document.getElementById('expense-tfoot');
+  const emptyEl = document.getElementById('list-empty');
+
+  if (list.length === 0) {
+    tbody.innerHTML = '';
+    tfoot.innerHTML = '';
+    emptyEl.style.display = 'block';
+    return;
+  }
+  emptyEl.style.display = 'none';
+
+  tbody.innerHTML = list.map(e => {
+    const sel = selectedIds.has(e.id);
+    const receiptHtml = e.receipt
+      ? `<img src="${e.receipt}" class="receipt-thumb" onclick="openImgModal('${e.id}')" title="Visualizza ricevuta">`
+      : `<span class="no-receipt" title="Nessuna ricevuta">—</span>`;
+    return `<tr class="${sel ? 'selected' : ''}">
+      <td><input type="checkbox" ${sel ? 'checked' : ''} onchange="toggleSelect(${e.id}, this)"></td>
+      <td>${e.date}</td>
+      <td><span title="${catLabel(e.category)}">${CATS[e.category] ? CATS[e.category].emoji + ' ' + CATS[e.category].label : e.category}</span></td>
+      <td><span style="font-weight:600">${esc(e.desc)}</span>${e.notes ? '<br><span style="font-size:11px;color:var(--gray-400)">' + esc(e.notes) + '</span>' : ''}</td>
+      <td><span style="font-size:12px;color:var(--gray-500)">${esc(e.client||'—')}</span></td>
+      <td class="amount">${fmtAmount(e.amount, e.currency||'EUR')}</td>
+      <td>${receiptHtml}</td>
+      <td><span class="badge ${e.reimbursable ? 'reimb-yes' : 'reimb-no'}">${e.reimbursable ? '✅ Sì' : '✗ No'}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-ghost btn-icon btn-sm" onclick="editExpense(${e.id})" title="Modifica">✏️</button>
+        <button class="btn btn-icon btn-sm" style="background:var(--red-light);color:var(--red)" onclick="deleteExpense(${e.id})" title="Elimina">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  // Footer totals by category
+  const catTotals = {};
+  list.forEach(e => {
+    const key = e.currency || 'EUR';
+    catTotals[key] = (catTotals[key] || 0) + e.amount;
+  });
+  const grandParts = Object.entries(catTotals).map(([c,v]) => currencySymbol(c) + ' ' + v.toFixed(2)).join(' + ');
+  tfoot.innerHTML = `<tr>
+    <td colspan="5" style="text-align:right;font-weight:700">Totale (${list.length} voci)</td>
+    <td class="amount" style="color:var(--blue)">${grandParts}</td>
+    <td colspan="3"></td>
+  </tr>`;
+}
+
+function toggleSelect(id, cb) {
+  if (cb.checked) selectedIds.add(id);
+  else selectedIds.delete(id);
+  updateSelCount();
+  renderList();
+}
+
+function toggleSelectAll(cb) {
+  const f = getListFilters();
+  const list = filterExpenses({ from: f.from, to: f.to, category: f.category, client: f.client });
+  if (cb.checked) list.forEach(e => selectedIds.add(e.id));
+  else list.forEach(e => selectedIds.delete(e.id));
+  updateSelCount();
+  renderList();
+}
+
+function updateSelCount() {
+  const el = document.getElementById('selected-count');
+  if (selectedIds.size > 0) el.textContent = selectedIds.size + ' selezionate';
+  else el.textContent = '';
+}
+
+function exportSelected() {
+  const ids = [...selectedIds];
+  const rows = ids.length > 0
+    ? state.expenses.filter(e => ids.includes(e.id))
+    : state.expenses;
+  if (rows.length === 0) { showToast('Nessuna spesa da esportare', 'error'); return; }
+  const header = 'Data,Categoria,Descrizione,Cliente,Importo,Valuta,Rimborsabile,Note\n';
+  const csv = rows.map(e =>
+    [e.date, catLabel(e.category), '"'+e.desc+'"', '"'+(e.client||'')+'"', e.amount, e.currency||'EUR', e.reimbursable?'Sì':'No', '"'+(e.notes||'')+'"'].join(',')
+  ).join('\n');
+  const blob = new Blob([header + csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'expense_export.csv';
+  a.click();
+  showToast('Export CSV scaricato!', 'success');
+}
+
+// ============================================================
+// IMAGE MODAL
+// ============================================================
+function openImgModal(id) {
+  const e = state.expenses.find(x => x.id === parseInt(id));
+  if (!e || !e.receipt) return;
+  document.getElementById('img-modal-img').src = e.receipt;
+  document.getElementById('img-modal').classList.remove('hidden');
+}
+function closeImgModal(ev) {
+  if (!ev || ev.target === document.getElementById('img-modal') || ev.currentTarget !== ev.target) {
+    document.getElementById('img-modal').classList.add('hidden');
+  }
+}
+
+// ============================================================
+// REPORT PREVIEW
+// ============================================================
+function updateReportPreview() {
+  const name = document.getElementById('r-name').value || '—';
+  const company = document.getElementById('r-company').value || '—';
+  const from = document.getElementById('r-from').value || '—';
+  const to = document.getElementById('r-to').value || '—';
+  const nsNum = document.getElementById('r-nsnum').value || 'NS-2026-001';
+  const clientF = document.getElementById('r-client').value;
+  const onlyReimb = document.getElementById('r-only-reimb').checked;
+  const list = filterExpenses({
+    from: document.getElementById('r-from').value || null,
+    to: document.getElementById('r-to').value || null,
+    client: clientF || null,
+    onlyReimb
+  });
+  const total = list.reduce((s,e) => s + e.amount, 0);
+  document.getElementById('report-preview').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;justify-content:space-between"><span>Dipendente</span><b>${esc(name)}</b></div>
+      <div style="display:flex;justify-content:space-between"><span>Azienda</span><b>${esc(company)}</b></div>
+      <div style="display:flex;justify-content:space-between"><span>Periodo</span><b>${from} → ${to}</b></div>
+      <div style="display:flex;justify-content:space-between"><span>N. Nota Spese</span><b>${esc(nsNum)}</b></div>
+      <div style="display:flex;justify-content:space-between"><span>Voci incluse</span><b>${list.length}</b></div>
+      <div style="display:flex;justify-content:space-between;font-size:15px;padding-top:8px;border-top:1px solid var(--gray-200)"><span style="font-weight:700">Totale</span><b style="color:var(--blue);font-size:16px">${total.toFixed(2)}</b></div>
+    </div>`;
+}
+
+// ============================================================
+// PDF GENERATION
+// ============================================================
+function generatePDF() {
+  const name = document.getElementById('r-name').value;
+  const company = document.getElementById('r-company').value;
+  const from = document.getElementById('r-from').value;
+  const to = document.getElementById('r-to').value;
+  const nsNum = document.getElementById('r-nsnum').value || 'NS-2026-001';
+  const clientF = document.getElementById('r-client').value;
+  const onlyReimb = document.getElementById('r-only-reimb').checked;
+  const includeReceipts = document.getElementById('r-include-receipts').checked;
+
+  if (!name) { showToast('Inserisci il nome dipendente', 'error'); document.getElementById('r-name').focus(); return; }
+
+  const expenses = filterExpenses({
+    from: from || null,
+    to: to || null,
+    client: clientF || null,
+    onlyReimb
+  }).sort((a,b) => a.date > b.date ? 1 : -1);
+
+  if (expenses.length === 0) { showToast('Nessuna spesa corrisponde ai filtri', 'error'); return; }
+
+  // Totals by category
+  const catTotals = {};
+  expenses.forEach(e => { catTotals[e.category] = (catTotals[e.category] || 0) + e.amount; });
+  const grandTotal = expenses.reduce((s,e) => s + e.amount, 0);
+
+  // Currency breakdown
+  const currTotals = {};
+  expenses.forEach(e => { currTotals[e.currency||'EUR'] = (currTotals[e.currency||'EUR']||0) + e.amount; });
+
+  const receiptSection = includeReceipts && expenses.some(e => e.receipt)
+    ? `<div style="page-break-before:always;padding:24px">
+        <h3 style="font-size:14px;font-weight:700;color:#1a2744;margin-bottom:16px;border-bottom:2px solid #1a2744;padding-bottom:8px">📎 RICEVUTE ALLEGATE</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:12px">
+          ${expenses.filter(e=>e.receipt).map(e=>`
+            <div style="border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;width:120px;text-align:center">
+              <img src="${e.receipt}" style="width:120px;height:90px;object-fit:cover;display:block">
+              <div style="padding:4px 6px;font-size:9px;color:#4b5563;line-height:1.3">${e.date}<br>${esc(e.desc).substring(0,30)}</div>
+            </div>`).join('')}
+        </div>
+       </div>` : '';
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>Nota Spese ${nsNum}</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Arial,sans-serif;font-size:11px;color:#1f2937;background:#fff}
+    .page{padding:28px 36px}
+    h1{font-size:22px;font-weight:900;color:#1a2744;letter-spacing:-0.5px}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #1a2744;padding-bottom:16px;margin-bottom:20px}
+    .header-left .sub{font-size:12px;color:#4b5563;margin-top:6px}
+    .meta-box{background:#f3f4f6;border-radius:8px;padding:10px 16px;font-size:11px}
+    .meta-box table{width:100%}
+    .meta-box td{padding:2px 6px;color:#374151}
+    .meta-box td:first-child{font-weight:700;color:#1a2744;white-space:nowrap}
+    h3{font-size:12px;font-weight:800;color:#1a2744;text-transform:uppercase;letter-spacing:.5px;margin:20px 0 10px;border-bottom:2px solid #e5e7eb;padding-bottom:6px}
+    table.exp{width:100%;border-collapse:collapse;font-size:10px}
+    table.exp th{background:#1a2744;color:#fff;padding:7px 8px;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:.4px}
+    table.exp td{padding:6px 8px;border-bottom:1px solid #f3f4f6;vertical-align:top}
+    table.exp tr:nth-child(even) td{background:#f9fafb}
+    table.exp td.amount{text-align:right;font-weight:700}
+    table.exp tfoot td{background:#e5e7eb;font-weight:800;border-top:2px solid #1a2744;padding:8px}
+    .breakdown{display:flex;gap:20px;flex-wrap:wrap;margin:12px 0}
+    .bk-item{flex:1;min-width:140px;background:#f3f4f6;border-radius:6px;padding:8px 12px}
+    .bk-item .bk-label{font-size:9px;font-weight:700;color:#4b5563;text-transform:uppercase;letter-spacing:.3px}
+    .bk-item .bk-val{font-size:16px;font-weight:900;color:#1a2744;margin-top:4px}
+    .sig-section{margin-top:40px;display:flex;gap:40px}
+    .sig-box{flex:1;border-top:2px solid #374151;padding-top:8px;font-size:10px;color:#374151}
+    .sig-box .sig-label{font-weight:700;margin-bottom:30px}
+    @media print{
+      @page{margin:0;size:A4}
+      body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    }
+  </style>
+  </head><body>
+  <div class="page">
+    <div class="header">
+      <div class="header-left">
+        <h1>💼 NOTA SPESE</h1>
+        <div class="sub">Numero: <b>${esc(nsNum)}</b> &nbsp;·&nbsp; Generata il: <b>${new Date().toLocaleDateString('it-IT')}</b></div>
+      </div>
+      <div class="meta-box">
+        <table>
+          <tr><td>Dipendente:</td><td>${esc(name)}</td></tr>
+          <tr><td>Azienda:</td><td>${esc(company||'—')}</td></tr>
+          <tr><td>Periodo:</td><td>${from||'—'} → ${to||'—'}</td></tr>
+          <tr><td>Tipo:</td><td>${onlyReimb ? 'Solo rimborsabili' : 'Tutte le spese'}</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="breakdown">
+      <div class="bk-item"><div class="bk-label">📊 Totale Voci</div><div class="bk-val">${expenses.length}</div></div>
+      ${Object.entries(currTotals).map(([c,v]) => `<div class="bk-item"><div class="bk-label">💶 Totale ${c}</div><div class="bk-val">${currencySymbol(c)} ${v.toFixed(2)}</div></div>`).join('')}
+    </div>
+
+    <h3>📋 Dettaglio Spese</h3>
+    <table class="exp">
+      <thead><tr>
+        <th>Data</th><th>Categoria</th><th>Descrizione</th><th>Cliente/Progetto</th><th style="text-align:right">Importo</th><th>Rimbors.</th><th>Note</th>
+      </tr></thead>
+      <tbody>
+        ${expenses.map(e => `<tr>
+          <td style="white-space:nowrap">${e.date}</td>
+          <td>${CATS[e.category] ? CATS[e.category].emoji + ' ' + CATS[e.category].label : e.category}</td>
+          <td>${esc(e.desc)}</td>
+          <td style="color:#4b5563">${esc(e.client||'—')}</td>
+          <td class="amount">${fmtAmount(e.amount, e.currency||'EUR')}</td>
+          <td style="text-align:center">${e.reimbursable ? '✅' : '✗'}</td>
+          <td style="color:#6b7280">${esc(e.notes||'')}</td>
+        </tr>`).join('')}
+      </tbody>
+      <tfoot><tr>
+        <td colspan="4" style="text-align:right">TOTALE COMPLESSIVO</td>
+        <td class="amount" style="font-size:13px">${Object.entries(currTotals).map(([c,v]) => currencySymbol(c)+' '+v.toFixed(2)).join(' + ')}</td>
+        <td colspan="2"></td>
+      </tr></tfoot>
+    </table>
+
+    <h3>📊 Riepilogo per Categoria</h3>
+    <table class="exp">
+      <thead><tr><th>Categoria</th><th style="text-align:right">Totale</th></tr></thead>
+      <tbody>
+        ${Object.entries(catTotals).sort((a,b)=>b[1]-a[1]).map(([cat,val]) => {
+          const c = CATS[cat]||{emoji:'📦',label:cat};
+          return `<tr><td>${c.emoji} ${c.label}</td><td class="amount">${val.toFixed(2)}</td></tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+
+    <div class="sig-section">
+      <div class="sig-box">
+        <div class="sig-label">Firma Dipendente</div>
+        <div>${esc(name)}</div>
+      </div>
+      <div class="sig-box">
+        <div class="sig-label">Firma Responsabile</div>
+        <div>Approvato da: ___________________</div>
+      </div>
+      <div class="sig-box">
+        <div class="sig-label">Data Approvazione</div>
+        <div>___________________</div>
+      </div>
+    </div>
+  </div>
+  ${receiptSection}
+  <script>window.onload=function(){window.print();}<\/script>
+  </body></html>`;
+
+  const w = window.open('', '_blank');
+  if (w) { w.document.write(html); w.document.close(); }
+  else showToast('Abilita i popup per generare il PDF', 'error');
+}
+
+// ============================================================
+// UTILS
+// ============================================================
+function esc(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + (type||'');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => { t.classList.remove('show'); }, 3000);
+}
+
+// Auto-increment NS number
+function initNsNum() {
+  const year = new Date().getFullYear();
+  const existing = state.expenses.length;
+  state.settings.nsNum = 'NS-' + year + '-' + String(Math.ceil(existing / 10) + 1).padStart(3, '0');
+  document.getElementById('hdr-ns-num').textContent = state.settings.nsNum;
+  document.getElementById('dash-ns-num').textContent = state.settings.nsNum;
+  document.getElementById('r-nsnum').value = state.settings.nsNum;
+}
+
+document.addEventListener('DOMContentLoaded', initNsNum);
+</script>
+</body>
+</html>
